@@ -28,7 +28,6 @@ const allCardsKey = "all_cards_zset";
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
   const unseenCards = await client.ZDIFF([allCardsKey, key]);
-  console.log(unseenCards);
   return unseenCards;
 }
 
