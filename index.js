@@ -62,6 +62,7 @@ app.get("/card_add", async (req, res) => {
 
   if (missingCard === "") {
     res.send({ id: "ALL CARDS" });
+    return;
   }
 
   res.send(missingCard);
