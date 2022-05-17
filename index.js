@@ -8,8 +8,8 @@ if (!oppositePort) {
   singleMode = true;
 }
 
-const Redis = require("ioredis");
-const client = new Redis();
+const client = require("redis").createClient();
+client.on("error", (err) => console.log("Redis Client Error", err));
 
 let isMaster = true;
 fs.writeFile("./master.lock", `${port}`, { flag: "wx" }, function (err) {
@@ -33,13 +33,9 @@ tail.on("line", function (data) {
   if (isMaster) {
     const userId = data;
     const card = getUnseenCardInMemory(userId);
-    wstream.write(JSON.stringify({ userId: userId, card: card }) + "\n");
+    client.RPUSH("user_queue:" + userId, card);
     return;
   }
-
-  const { userId: userId, card: card } = JSON.parse(data);
-  userChannel[userId].push(card);
-  return;
 });
 
 tail.on("error", function (error) {
@@ -84,7 +80,7 @@ const getUnseenCardInMemory = (userId) => {
     return nextCard;
   }
 
-  return null;
+  return JSON.stringify({ id: "ALL CARDS" });
 };
 
 const getUnseenCard = async (userId) => {
@@ -97,7 +93,11 @@ const getUnseenCard = async (userId) => {
   }
 
   wstream.write(userId + "\n");
-  const card = await userChannel[userId].shift();
+  let card = undefined;
+  while (!card) {
+    card = await client.RPOP("user_queue:" + userId);
+  }
+  console.log(card);
   return card;
 };
 
@@ -132,6 +132,10 @@ const router = async (req, res) => {
 
 server.on("request", router);
 
-server.listen(port, "0.0.0.0", () => {
-  console.log(`Server listening at http://0.0.0.0:${port}`);
+client.on("ready", () => {
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`Server listening at http://0.0.0.0:${port}`);
+  });
 });
+
+client.connect();
