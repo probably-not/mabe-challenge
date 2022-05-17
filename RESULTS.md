@@ -45,3 +45,26 @@ Output:
 ```
 test took: 51607 milliseconds| 51.61 seconds
 ```
+
+### v3
+
+Swap the node-redis package with the ioredis package, which claims to be more performant.
+
+Output:
+```
+test took: 53338 milliseconds| 53.34 seconds
+```
+
+Interestingly enough, this caused a slowdown in the speed of the testing.
+The ioredis package suggests using the auto-pipelining feature to improve performance, so we will try that next.
+
+### v3.1
+
+Add auto-pipelining to the ioredis implementation.
+
+Output:
+```
+test took: 55758 milliseconds| 55.76 seconds
+```
+
+Strangely, this is even slower than without auto-pipelining enabled. With this insight, it looks like we need to revert back to the node-redis library.
