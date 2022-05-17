@@ -12,3 +12,5 @@ Output:
 ```
 test took: 568816 milliseconds| 568.82 seconds
 ```
+
+This is approximately 9 minutes and 29 seconds.
