@@ -63,16 +63,16 @@ const cardHandler = async (req, res, userId) => {
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
-    res.writeHead(200);
+    res.statusCode = 200;
     res.end(JSON.stringify({ id: "ALL CARDS" }));
     return;
   }
 
-  res.writeHead(200);
+  res.statusCode = 200;
   res.end(unseenCard);
 };
 
-const http = require("http");
+const http = require("turbo-http");
 server = http.createServer();
 const port = +process.argv[2] || 3000;
 const baseUrl = `http://0.0.0.0:${port}`;
@@ -84,7 +84,7 @@ const router = async (req, res) => {
     return;
   }
 
-  res.writeHead(200);
+  res.statusCode = 200;
   res.end(JSON.stringify({ ready: true }));
 };
 
