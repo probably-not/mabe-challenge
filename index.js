@@ -26,6 +26,8 @@ fs.closeSync(fs.openSync(`./${port}`, "w"));
 
 Tail = require("tail").Tail;
 tail = new Tail(`./${port}`);
+
+const Channel = require("@nodeguy/channel");
 const userChannel = {};
 
 tail.on("line", function (data) {
@@ -37,10 +39,6 @@ tail.on("line", function (data) {
   }
 
   const { userId: userId, card: card } = JSON.parse(data);
-  if (!userChannel[userId]) {
-    userChannel[userId] = [card];
-    return;
-  }
   userChannel[userId].push(card);
   return;
 });
@@ -90,25 +88,22 @@ const getUnseenCardInMemory = (userId) => {
   return null;
 };
 
-const getUnseenCard = (userId) => {
+const getUnseenCard = async (userId) => {
   if (isMaster) {
     return getUnseenCardInMemory(userId);
   }
 
-  wstream.write(userId + "\n");
-  let card = null;
-  var timeout = setInterval(function () {
-    if (userChannel[userId] !== undefined) {
-      clearInterval(timeout);
-      card = userChannel[userId].pop();
-    }
-  }, 4);
+  if (!userChannel[userId]) {
+    userChannel[userId] = Channel();
+  }
 
+  wstream.write(userId + "\n");
+  const card = await userChannel[userId].shift();
   return card;
 };
 
 const cardHandler = async (req, res, userId) => {
-  const unseenCard = getUnseenCard(userId);
+  const unseenCard = await getUnseenCard(userId);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {

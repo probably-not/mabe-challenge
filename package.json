@@ -13,6 +13,7 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
+    "@nodeguy/channel": "^1.0.2",
     "express": "^4.17.2",
     "ioredis": "^5.0.5",
     "named-pipe": "^1.0.0",
