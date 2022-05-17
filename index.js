@@ -40,10 +40,6 @@ const shutdownHandler = (signal) => {
   fs.unlinkSync(`./${port}`);
   fs.unlinkSync(`./-m`);
   fs.unlinkSync(`./644`);
-  if (isMaster) {
-    console.log("erasing master lock file");
-    fs.unlinkSync("./master.lock");
-  }
   process.exit(0);
 };
 
