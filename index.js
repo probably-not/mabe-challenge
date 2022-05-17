@@ -27,8 +27,11 @@ fs.closeSync(fs.openSync(`./${port}`, "w"));
 Tail = require("tail").Tail;
 tail = new Tail(`./${port}`);
 
-const Channel = require("@nodeguy/channel");
 const userChannel = {};
+
+const pushToChannel = async (userId, card) => {
+  userChannel[userId].push(card);
+};
 
 tail.on("line", function (data) {
   if (isMaster) {
@@ -94,7 +97,7 @@ const getUnseenCard = async (userId) => {
   }
 
   if (!userChannel[userId]) {
-    userChannel[userId] = Channel();
+    userChannel[userId] = [];
   }
 
   wstream.write(userId + "\n");
