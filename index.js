@@ -25,34 +25,25 @@ const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 
 async function getMissingCard(key) {
-  // Get the cards that the user has already seen
-  const userCards = await client.zRange(key, 0, -1);
-  let allCards = [...cards];
-
-  // Remove each card that the user has already seen
-  userCards.forEach((userCard, idx) => {
-    allCards = allCards.filter(function (value, index, arr) {
-      return JSON.parse(userCard).id !== value.id;
-    });
-  });
-
-  // Return one of the cards left
-  return allCards.pop();
+  // Get the cards that the user hasn't seen yet
+  const unseenCards = await client.ZDIFF("all_cards_zset", key);
+  return unseenCards;
 }
 
 app.get("/card_add", async (req, res) => {
   const key = "user_id:" + req.query.id;
   let missingCard = "";
 
-  while (true) {
-    missingCard = await getMissingCard(key);
+  unseenCards = await getMissingCard(key);
 
-    // ALL CARDS is sent when all cards have been given to the user
-    if (missingCard === undefined) {
-      res.send({ id: "ALL CARDS" });
-      return;
-    }
+  // ALL CARDS is sent when all cards have been given to the user
+  if (!unseenCards || unseenCards.length === 0) {
+    res.send({ id: "ALL CARDS" });
+    return;
+  }
 
+  for (let index = 0; index < unseenCards.length; index++) {
+    const tryCard = unseenCards[index];
     // Try to acquire the card so we can send it
     result = await client.ZADD(
       key,
@@ -64,8 +55,12 @@ app.get("/card_add", async (req, res) => {
     if (result === 0) {
       continue;
     }
-
+    missingCard = tryCard;
     break;
+  }
+
+  if (missingCard === "") {
+    res.send({ id: "ALL CARDS" });
   }
 
   res.send(missingCard);
