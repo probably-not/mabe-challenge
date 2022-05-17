@@ -19,6 +19,20 @@ const cardsForInsert = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const atomicDiffLua = `
+local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
+if #unseen == 0 then
+  return nil
+end
+
+local res = redis.call('sadd', KEYS[2], 0, unseen[1])
+if res == 0 then
+  return nil
+end
+
+return unseen[1]
+`;
+
 var initializeAllCards = (function () {
   var executed = false;
   return function () {
@@ -26,32 +40,16 @@ var initializeAllCards = (function () {
       return;
     }
 
-    console.log("creating all cards set");
     client.SADD(allCardsKey, cardsForInsert);
-    console.log("all cards set created");
-
     executed = true;
   };
 })();
 
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
-  const unseenCard = await client.EVAL(
-    `
-    local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
-    if #unseen == 0 then
-      return nil
-    end
-
-    local res = redis.call('sadd', KEYS[2], 0, unseen[1])
-    if res == 0 then
-      return nil
-    end
-  
-    return unseen[1]
-    `,
-    { keys: [allCardsKey, key] }
-  );
+  const unseenCard = await client.EVAL(atomicDiffLua, {
+    keys: [allCardsKey, key],
+  });
 
   return unseenCard;
 }
