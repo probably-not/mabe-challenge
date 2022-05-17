@@ -7,15 +7,6 @@ const client = require("redis").createClient();
 client.on("error", (err) => console.log("Redis Client Error", err));
 
 client.on("ready", () => {
-  console.log("creating all cards zset");
-  cards.forEach((card) => {
-    client.ZADD(allCardsKey, {
-      score: 0,
-      value: JSON.stringify(card),
-    });
-  });
-  console.log("all cards zset created");
-
   app.listen(port, "0.0.0.0", () => {
     console.log(`Example app listening at http://0.0.0.0:${port}`);
   });
@@ -25,6 +16,26 @@ const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCardsKey = "all_cards_zset";
 
+var initializeAllCards = (function () {
+  var executed = false;
+  return function () {
+    if (executed) {
+      return;
+    }
+
+    console.log("creating all cards zset");
+    cards.forEach((card) => {
+      client.ZADD(allCardsKey, {
+        score: 0,
+        value: JSON.stringify(card),
+      });
+    });
+    console.log("all cards zset created");
+
+    executed = true;
+  };
+})();
+
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
   const unseenCards = await client.ZDIFF([allCardsKey, key]);
@@ -32,6 +43,8 @@ async function getMissingCard(key) {
 }
 
 app.get("/card_add", async (req, res) => {
+  initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+
   const key = "user_id:" + req.query.id;
   let missingCard = "";
 
