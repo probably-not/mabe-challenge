@@ -38,43 +38,38 @@ var initializeAllCards = (function () {
 
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
-  const unseenCards = await client.ZDIFF([allCardsKey, key]);
-  return unseenCards;
+  const unseenCard = await client.EVAL(
+    `
+    local unseen = redis.call('zdiff', 2, KEYS[1], KEYS[2])
+    if #unseen == 0 then
+      return nil
+    end
+
+    local res = redis.call('zadd', KEYS[2], 0, unseen[1])
+    if res == 0 then
+      return nil
+    end
+  
+    return unseen[1]
+    `,
+    { keys: [allCardsKey, key] }
+  );
+
+  return unseenCard;
 }
 
 app.get("/card_add", async (req, res) => {
   initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-
   const key = "user_id:" + req.query.id;
-  let missingCard = "";
-
-  unseenCards = await getMissingCard(key);
+  unseenCard = await getMissingCard(key);
 
   // ALL CARDS is sent when all cards have been given to the user
-  if (!unseenCards || unseenCards.length === 0) {
+  if (!unseenCard) {
     res.send({ id: "ALL CARDS" });
     return;
   }
 
-  for (let index = 0; index < unseenCards.length; index++) {
-    const tryCard = unseenCards[index];
-    // Try to acquire the card so we can send it
-    result = await client.ZADD(key, { score: 0, value: tryCard }, "NX");
-
-    // If we couldn't acquire it, then someone else has already shown that use this card, so we try another card.
-    if (result === 0) {
-      continue;
-    }
-    missingCard = tryCard;
-    break;
-  }
-
-  if (missingCard === "") {
-    res.send({ id: "ALL CARDS" });
-    return;
-  }
-
-  res.send(missingCard);
+  res.send(unseenCard);
 });
 
 app.get("/ready", async (req, res) => {
