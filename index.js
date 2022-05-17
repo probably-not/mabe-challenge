@@ -97,7 +97,6 @@ const getUnseenCard = async (userId) => {
   while (!card) {
     card = await client.RPOP("user_queue:" + userId);
   }
-  console.log(card);
   return card;
 };
 
