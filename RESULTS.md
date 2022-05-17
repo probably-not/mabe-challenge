@@ -101,3 +101,14 @@ test took: 45773 milliseconds| 45.77 seconds
 ```
 
 This is a 7.22333% performance boost from the v5 version, and a 170.211% performance boost from the original v0 version!
+
+### v7
+
+After some time experimenting and trying to determine the best way to keep optimizing, this latest version swaps out the entire Diff/Filter system with a very simple atomic integer. This integer represents the current index of the cards that we've shown to the user, and since incrementing it is atomic, we can safely ensure that we are accessing each index only once across our two instances.
+
+Output:
+```
+test took: 20342 milliseconds| 20.34 seconds
+```
+
+This is a 76.9324% performance boost from the v6 version, and a 186.191% performance boost from the original v0 version!
