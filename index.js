@@ -3,21 +3,14 @@ const express = require("express");
 const app = express();
 const port = +process.argv[2] || 3000;
 
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-client.on("ready", () => {
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`Example app listening at http://0.0.0.0:${port}`);
-  });
-});
-
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCardsKey = "all_cards_zset";
-const cardsForInsert = cards.map((c) => {
-  return { score: 0, value: JSON.stringify(c) };
-});
+const cardsForInsert = cards
+  .map((c) => {
+    return [0, JSON.stringify(c)];
+  })
+  .flat(1);
 
 var initializeAllCards = (function () {
   var executed = false;
@@ -27,7 +20,7 @@ var initializeAllCards = (function () {
     }
 
     console.log("creating all cards zset");
-    client.ZADD(allCardsKey, cardsForInsert);
+    client.zadd(allCardsKey, ...cardsForInsert);
     console.log("all cards zset created");
 
     executed = true;
@@ -36,7 +29,7 @@ var initializeAllCards = (function () {
 
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
-  const unseenCard = await client.EVAL(
+  const unseenCard = await client.eval(
     `
     local unseen = redis.call('zdiff', 2, KEYS[1], KEYS[2])
     if #unseen == 0 then
@@ -50,7 +43,9 @@ async function getMissingCard(key) {
   
     return unseen[1]
     `,
-    { keys: [allCardsKey, key] }
+    2,
+    allCardsKey,
+    key
   );
 
   return unseenCard;
@@ -74,4 +69,13 @@ app.get("/ready", async (req, res) => {
   res.send({ ready: true });
 });
 
-client.connect();
+const Redis = require("ioredis");
+const client = new Redis({ enableAutoPipelining: true });
+
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+client.on("ready", () => {
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Example app listening at http://0.0.0.0:${port}`);
+  });
+});
