@@ -1,7 +1,7 @@
 const fs = require("fs");
 const port = +process.argv[2] || 3000;
 
-const portmap = { 4001: 4002, 4002: 4001 };
+const portmap = { 4001: 4002, 4002: 4001, 3000: 3001 };
 const oppositePort = portmap[port];
 let singleMode = false;
 if (!oppositePort) {
@@ -12,49 +12,36 @@ const Redis = require("ioredis");
 const client = new Redis();
 
 let isMaster = true;
-const wasSet = client.setnx("master-node", "1");
-if (wasSet != 1) {
-  isMaster = false;
-}
-
-const namedPipe = require("named-pipe");
-if (isMaster) {
-  namedPipe.mkfifoSync(`./${port}`);
-  namedPipe.mkfifoSync(`./${oppositePort}`);
-}
+fs.writeFile("./master.lock", `${port}`, { flag: "wx" }, function (err) {
+  if (err) {
+    console.log("File write error", err);
+    isMaster = false;
+    return;
+  }
+  isMaster = true;
+});
 
 const wstream = fs.createWriteStream(`./${oppositePort}`);
+fs.closeSync(fs.openSync(`./${port}`, "w"));
+const rStream = fs.createReadStream(`./${port}`);
 
 const userChannel = {};
-const net = require("net");
-fs.open(
-  `./${port}`,
-  fs.constants.O_RDONLY | fs.constants.O_NONBLOCK,
-  (err, fd) => {
-    // Handle err
-    if (err) {
-      throw err;
-    }
-    const pipe = new net.Socket({ fd });
-    // Now `pipe` is a stream that can be used for reading from the FIFO.
-    pipe.on("data", (buf) => {
-      data = buf.toString();
-      if (isMaster) {
-        const userId = data;
-        const card = getUnseenCardInMemory(userId);
-        wstream.write(JSON.stringify({ userId: userId, card: card }));
-        return;
-      }
-
-      const { userId: userId, card: card } = JSON.parse(data);
-      if (!userChannel[userId]) {
-        userChannel[userId] = [card];
-        return;
-      }
-      userChannel[userId].push(card);
-    });
+rStream.on("data", function (buf) {
+  data = buf.toString();
+  if (isMaster) {
+    const userId = data;
+    const card = getUnseenCardInMemory(userId);
+    wstream.write(JSON.stringify({ userId: userId, card: card }));
+    return;
   }
-);
+
+  const { userId: userId, card: card } = JSON.parse(data);
+  if (!userChannel[userId]) {
+    userChannel[userId] = [card];
+    return;
+  }
+  userChannel[userId].push(card);
+});
 
 const shutdownHandler = (signal) => {
   if (isMaster) {
@@ -62,8 +49,7 @@ const shutdownHandler = (signal) => {
     console.log("erasing FIFO pipe");
     fs.unlinkSync(`./${port}`);
     fs.unlinkSync(`./${oppositePort}`);
-    fs.unlinkSync(`./-m`);
-    fs.unlinkSync(`./644`);
+    fs.unlinkSync(`./master.lock`);
   }
   process.exit(0);
 };
