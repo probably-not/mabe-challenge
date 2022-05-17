@@ -7,6 +7,15 @@ const client = require("redis").createClient();
 client.on("error", (err) => console.log("Redis Client Error", err));
 
 client.on("ready", () => {
+  console.log("creating all cards zset");
+  cards.forEach((card) => {
+    client.ZADD("all_cards_zset", {
+      score: 0,
+      value: JSON.stringify(card),
+    });
+  });
+  console.log("all cards zset created");
+
   app.listen(port, "0.0.0.0", () => {
     console.log(`Example app listening at http://0.0.0.0:${port}`);
   });
