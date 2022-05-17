@@ -40,7 +40,7 @@ return unseen[1]
 
 const atomicDiffSha1 = getSHA1(atomicDiffLua);
 
-var initializeAllCards = (function () {
+const initializeAllCards = (function () {
   var executed = false;
   return async function () {
     if (executed) {
@@ -55,19 +55,19 @@ var initializeAllCards = (function () {
   };
 })();
 
-async function getMissingCard(key) {
+const getUnseenCard = async function (key) {
   // Get the cards that the user hasn't seen yet
   const unseenCard = await client.EVALSHA(atomicDiffSha1, {
     keys: [allCardsKey, key],
   });
 
-  return unseenCard;
-}
+  return unseenCard ? unseenCard.toString() : undefined;
+};
 
 app.get("/card_add", async (req, res) => {
   await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
   const key = "user_id:" + req.query.id;
-  unseenCard = await getMissingCard(key);
+  unseenCard = await getUnseenCard(key);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
