@@ -1,55 +1,8 @@
 const fs = require("fs");
 const port = +process.argv[2] || 3000;
 
-const portmap = { 4001: 4002, 4002: 4001, 3000: 3001 };
-const oppositePort = portmap[port];
-let singleMode = false;
-if (!oppositePort) {
-  singleMode = true;
-}
-
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-let isMaster = true;
-fs.writeFile("./master.lock", `${port}`, { flag: "wx" }, function (err) {
-  if (err) {
-    console.log("File write error", err);
-    isMaster = false;
-    return;
-  }
-  isMaster = true;
-});
-
-const wstream = fs.createWriteStream(`./${oppositePort}`);
-fs.closeSync(fs.openSync(`./${port}`, "w"));
-
-Tail = require("tail").Tail;
-tail = new Tail(`./${port}`);
-
-const userChannel = {};
-
-tail.on("line", function (data) {
-  if (isMaster) {
-    const userId = data;
-    const card = getUnseenCardInMemory(userId);
-    client.RPUSH("user_queue:" + userId, card);
-    return;
-  }
-});
-
-tail.on("error", function (error) {
-  console.log("Tail Error: ", error);
-});
-
 const shutdownHandler = (signal) => {
-  if (isMaster) {
-    console.log("starting shutdown, got signal " + signal);
-    console.log("erasing File pipe");
-    fs.unlinkSync(`./${port}`);
-    fs.unlinkSync(`./${oppositePort}`);
-    fs.unlinkSync(`./master.lock`);
-  }
+  console.log("starting shutdown, got signal " + signal);
   process.exit(0);
 };
 
@@ -64,7 +17,9 @@ const allCards = cards.map((c) => {
 
 const userCards = {};
 
-const getUnseenCardInMemory = (userId) => {
+const getUnseenCard = async function (userId) {
+  // Get the cards that the user hasn't seen yet
+
   // First time seeing the user
   if (!userCards[userId]) {
     const firstCard = allCards[0];
@@ -80,28 +35,12 @@ const getUnseenCardInMemory = (userId) => {
     return nextCard;
   }
 
-  return JSON.stringify({ id: "ALL CARDS" });
-};
-
-const getUnseenCard = async (userId) => {
-  if (isMaster) {
-    return getUnseenCardInMemory(userId);
-  }
-
-  if (!userChannel[userId]) {
-    userChannel[userId] = [];
-  }
-
-  wstream.write(userId + "\n");
-  let card = undefined;
-  while (!card) {
-    card = await client.RPOP("user_queue:" + userId);
-  }
-  return card;
+  return undefined;
 };
 
 const cardHandler = async (req, res, userId) => {
-  const unseenCard = await getUnseenCard(userId);
+  const key = "user_id:" + userId;
+  unseenCard = await getUnseenCard(key);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
@@ -131,10 +70,6 @@ const router = async (req, res) => {
 
 server.on("request", router);
 
-client.on("ready", () => {
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server listening at http://0.0.0.0:${port}`);
-  });
+server.listen(port, "0.0.0.0", () => {
+  console.log(`Server listening at http://0.0.0.0:${port}`);
 });
-
-client.connect();

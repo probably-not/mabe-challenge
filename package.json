@@ -13,8 +13,8 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
-    "redis": "^4.1.0",
-    "tail": "^2.2.4",
+    "express": "^4.17.2",
+    "redis": "^4.0.1",
     "turbo-http": "^0.3.2"
   }
 }
