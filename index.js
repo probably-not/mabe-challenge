@@ -2,63 +2,36 @@ const fs = require("fs");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
-const allCardsKey = "all_cards_set";
 const cardsForInsert = cards.map((c) => {
   return JSON.stringify(c);
 });
 
-const crypto = require("crypto");
-const getSHA1 = function (input) {
-  return crypto.createHash("sha1").update(input).digest("hex");
+const executedUsers = {};
+const initializeUserCards = async (userId) => {
+  if (executedUsers[userId]) {
+    return;
+  }
+
+  const key = "user_id:" + userId;
+  await client.SADD(key, cardsForInsert);
+  executedUsers[userId] = true;
 };
 
-const atomicDiffLua = `
-local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
-if #unseen == 0 then
-  return nil
-end
-
-local res = redis.call('sadd', KEYS[2], 0, unseen[1])
-if res == 0 then
-  return nil
-end
-
-return unseen[1]
-`;
-
-const atomicDiffSha1 = getSHA1(atomicDiffLua);
-
-const initializeAllCards = (function () {
-  var executed = false;
-  return async function () {
-    if (executed) {
-      return;
-    }
-
-    await Promise.all([
-      client.SADD(allCardsKey, cardsForInsert),
-      client.SCRIPT_LOAD(atomicDiffLua),
-    ]);
-    executed = true;
-  };
-})();
-
-const getUnseenCard = async function (key) {
+const getUnseenCard = async function (userId) {
   // Get the cards that the user hasn't seen yet
-  const unseenCard = await client.EVALSHA(atomicDiffSha1, {
-    keys: [allCardsKey, key],
-  });
-
-  return unseenCard ? unseenCard.toString() : undefined;
+  const key = "user_id:" + userId;
+  return await client.SPOP(key);
 };
 
 const cardHandler = async (req, res, userId) => {
   const reqid = crypto.randomUUID();
-  await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+
+  console.time(`${reqid} user cards`);
+  await initializeUserCards(userId);
+  console.timeEnd(`${reqid} user cards`);
 
   console.time(`${reqid} get unseen card`);
-  const key = "user_id:" + userId;
-  unseenCard = await getUnseenCard(key);
+  unseenCard = await getUnseenCard(userId);
   console.timeEnd(`${reqid} get unseen card`);
 
   // ALL CARDS is sent when all cards have been given to the user
