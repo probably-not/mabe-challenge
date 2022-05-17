@@ -53,9 +53,13 @@ const getUnseenCard = async function (key) {
 };
 
 const cardHandler = async (req, res, userId) => {
+  const reqid = crypto.randomUUID();
   await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+
+  console.time(`${reqid} get unseen card`);
   const key = "user_id:" + userId;
   unseenCard = await getUnseenCard(key);
+  console.timeEnd(`${reqid} get unseen card`);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
