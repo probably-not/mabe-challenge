@@ -47,11 +47,7 @@ app.get("/card_add", async (req, res) => {
   for (let index = 0; index < unseenCards.length; index++) {
     const tryCard = unseenCards[index];
     // Try to acquire the card so we can send it
-    result = await client.ZADD(
-      key,
-      { score: 0, value: JSON.stringify(tryCard) },
-      "NX"
-    );
+    result = await client.ZADD(key, { score: 0, value: tryCard }, "NX");
 
     // If we couldn't acquire it, then someone else has already shown that use this card, so we try another card.
     if (result === 0) {
