@@ -23,15 +23,16 @@ fs.writeFile("./master.lock", `${port}`, { flag: "wx" }, function (err) {
 
 const wstream = fs.createWriteStream(`./${oppositePort}`);
 fs.closeSync(fs.openSync(`./${port}`, "w"));
-const rStream = fs.createReadStream(`./${port}`);
 
+Tail = require("tail").Tail;
+tail = new Tail(`./${port}`);
 const userChannel = {};
-rStream.on("data", function (buf) {
-  data = buf.toString();
+
+tail.on("line", function (data) {
   if (isMaster) {
     const userId = data;
     const card = getUnseenCardInMemory(userId);
-    wstream.write(JSON.stringify({ userId: userId, card: card }));
+    wstream.write(JSON.stringify({ userId: userId, card: card }) + "\n");
     return;
   }
 
@@ -41,6 +42,11 @@ rStream.on("data", function (buf) {
     return;
   }
   userChannel[userId].push(card);
+  return;
+});
+
+tail.on("error", function (error) {
+  console.log("Tail Error: ", error);
 });
 
 const shutdownHandler = (signal) => {
@@ -89,7 +95,7 @@ const getUnseenCard = (userId) => {
     return getUnseenCardInMemory(userId);
   }
 
-  wstream.write(userId);
+  wstream.write(userId + "\n");
   let card = null;
   var timeout = setInterval(function () {
     if (userChannel[userId] !== undefined) {

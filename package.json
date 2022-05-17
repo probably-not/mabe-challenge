@@ -17,6 +17,7 @@
     "ioredis": "^5.0.5",
     "named-pipe": "^1.0.0",
     "redis": "^4.0.1",
+    "tail": "^2.2.4",
     "turbo-http": "^0.3.2"
   }
 }
