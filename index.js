@@ -1,8 +1,24 @@
 const fs = require("fs");
 const port = +process.argv[2] || 3000;
 
+const portmap = { 4001: 4002, 4002: 4001, 3000: 3001 };
+const oppositePort = portmap[port];
+
+let isMaster = true;
+fs.writeFile("./master.lock", `${port}`, { flag: "wx" }, function (err) {
+  if (err) {
+    console.log("File write error", err);
+    isMaster = false;
+    return;
+  }
+  isMaster = true;
+});
+
 const shutdownHandler = (signal) => {
   console.log("starting shutdown, got signal " + signal);
+  if (isMaster) {
+    fs.unlinkSync("./master.lock");
+  }
   process.exit(0);
 };
 
@@ -55,7 +71,6 @@ const cardHandler = async (req, res, userId) => {
 
 const http = require("turbo-http");
 server = http.createServer();
-const baseUrl = `http://0.0.0.0:${port}`;
 
 const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
