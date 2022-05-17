@@ -1,16 +1,6 @@
 const fs = require("fs");
-const express = require("express");
-const app = express();
+const polkadot = require("polkadot");
 const port = +process.argv[2] || 3000;
-
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-client.on("ready", () => {
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`Example app listening at http://0.0.0.0:${port}`);
-  });
-});
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -56,22 +46,37 @@ async function getMissingCard(key) {
   return unseenCard;
 }
 
-app.get("/card_add", async (req, res) => {
-  initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-  const key = "user_id:" + req.query.id;
-  unseenCard = await getMissingCard(key);
-
-  // ALL CARDS is sent when all cards have been given to the user
-  if (!unseenCard) {
-    res.send({ id: "ALL CARDS" });
+const app = polkadot(async (req, res) => {
+  if (req.path === "/ready") {
+    res.statusCode = 200;
+    res.end(JSON.stringify({ ready: true }));
     return;
   }
 
-  res.send(unseenCard);
+  if (req.path === "/card_add") {
+    initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+    const key = "user_id:" + req.query.id;
+    unseenCard = await getMissingCard(key);
+
+    // ALL CARDS is sent when all cards have been given to the user
+    if (!unseenCard) {
+      res.statusCode = 200;
+      res.end(JSON.stringify({ id: "ALL CARDS" }));
+      return;
+    }
+
+    res.statusCode = 200;
+    res.end(unseenCard);
+  }
 });
 
-app.get("/ready", async (req, res) => {
-  res.send({ ready: true });
+const client = require("redis").createClient();
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+client.on("ready", () => {
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Example app listening at http://0.0.0.0:${port}`);
+  });
 });
 
 client.connect();

@@ -13,7 +13,7 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.2",
+    "polkadot": "^1.0.0",
     "redis": "^4.0.1"
   }
 }
