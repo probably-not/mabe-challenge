@@ -1,5 +1,4 @@
 const fs = require("fs");
-const crypto = require("crypto");
 const port = +process.argv[2] || 3000;
 
 let isMaster = false;
@@ -22,7 +21,6 @@ const shutdownHandler = (signal) => {
 
 process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
-process.on("SIGKILL", shutdownHandler);
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -54,11 +52,7 @@ const getUnseenCard = async function (userId) {
 };
 
 const cardHandler = async (req, res, userId) => {
-  const reqid = crypto.randomUUID();
-  console.time(`${reqid} get unseen card`);
-  const key = "user_id:" + userId;
-  unseenCard = await getUnseenCard(key);
-  console.timeEnd(`${reqid} get unseen card`);
+  unseenCard = await getUnseenCard(userId);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
