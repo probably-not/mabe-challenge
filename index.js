@@ -14,9 +14,9 @@ client.on("ready", () => {
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
-const allCardsKey = "all_cards_zset";
+const allCardsKey = "all_cards_set";
 const cardsForInsert = cards.map((c) => {
-  return { score: 0, value: JSON.stringify(c) };
+  return JSON.stringify(c);
 });
 
 var initializeAllCards = (function () {
@@ -26,9 +26,9 @@ var initializeAllCards = (function () {
       return;
     }
 
-    console.log("creating all cards zset");
-    client.ZADD(allCardsKey, cardsForInsert);
-    console.log("all cards zset created");
+    console.log("creating all cards set");
+    client.SADD(allCardsKey, cardsForInsert);
+    console.log("all cards set created");
 
     executed = true;
   };
@@ -38,12 +38,12 @@ async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
   const unseenCard = await client.EVAL(
     `
-    local unseen = redis.call('zdiff', 2, KEYS[1], KEYS[2])
+    local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
     if #unseen == 0 then
       return nil
     end
 
-    local res = redis.call('zadd', KEYS[2], 0, unseen[1])
+    local res = redis.call('sadd', KEYS[2], 0, unseen[1])
     if res == 0 then
       return nil
     end
