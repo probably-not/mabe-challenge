@@ -90,3 +90,14 @@ test took: 49199 milliseconds| 49.20 seconds
 ```
 
 This is a 4.45151% performance boost from the v4 version, and a 168.156% performance boost from the original v0 version!
+
+### v6
+
+Swap Node's raw HTTP module with the turbo-http package. From my tests, this package is faster, and it still answers all of the requirements for the HTTP server that we need for our use case.
+
+Output:
+```
+test took: 45773 milliseconds| 45.77 seconds
+```
+
+This is a 7.22333% performance boost from the v5 version, and a 170.211% performance boost from the original v0 version!
