@@ -9,7 +9,7 @@ client.on("error", (err) => console.log("Redis Client Error", err));
 client.on("ready", () => {
   console.log("creating all cards zset");
   cards.forEach((card) => {
-    client.ZADD("all_cards_zset", {
+    client.ZADD(allCardsKey, {
       score: 0,
       value: JSON.stringify(card),
     });
@@ -23,10 +23,11 @@ client.on("ready", () => {
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
+const allCardsKey = "all_cards_zset";
 
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
-  const unseenCards = await client.ZDIFF("all_cards_zset", key);
+  const unseenCards = await client.ZDIFF(allCardsKey, key);
   return unseenCards;
 }
 
