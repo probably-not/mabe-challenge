@@ -1,17 +1,45 @@
 const fs = require("fs");
 const port = +process.argv[2] || 3000;
 
-let isMaster = false;
-fs.writeFile("./master.lock", port.toString(), { flag: "wx" }, function (err) {
-  if (err) {
-    console.log("File Write Error", err);
-    isMaster = false;
+const portmap = { 4001: 4002, 4002: 4001 };
+const oppositePort = portmap[port];
+let singleMode = false;
+if (!oppositePort) {
+  singleMode = true;
+}
+
+const namedPipe = require("named-pipe");
+
+namedPipe.mkfifoSync(`./${port}`);
+
+const wstream = fs.createWriteStream(`./${port}`);
+setInterval(() => {
+  wstream.write(`hello at ${process.hrtime()[0]}\n`);
+}, 1000);
+
+const net = require("net");
+fs.open(
+  `./${port}`,
+  fs.constants.O_RDONLY | fs.constants.O_NONBLOCK,
+  (err, fd) => {
+    // Handle err
+    if (err) {
+      throw err;
+    }
+    const pipe = new net.Socket({ fd });
+    // Now `pipe` is a stream that can be used for reading from the FIFO.
+    pipe.on("data", (data) => {
+      console.log(data.toString());
+    });
   }
-  isMaster = true;
-});
+);
 
 const shutdownHandler = (signal) => {
   console.log("starting shutdown, got signal " + signal);
+  console.log("erasing FIFO pipe");
+  fs.unlinkSync(`./${port}`);
+  fs.unlinkSync(`./-m`);
+  fs.unlinkSync(`./644`);
   if (isMaster) {
     console.log("erasing master lock file");
     fs.unlinkSync("./master.lock");
