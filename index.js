@@ -1,61 +1,60 @@
 const fs = require("fs");
+const crypto = require("crypto");
+const port = +process.argv[2] || 3000;
+
+let isMaster = false;
+fs.writeFile("./master.lock", port.toString(), { flag: "wx" }, function (err) {
+  if (err) {
+    console.log("File Write Error", err);
+    isMaster = false;
+  }
+  isMaster = true;
+});
+
+const shutdownHandler = (signal) => {
+  console.log("starting shutdown, got signal " + signal);
+  if (isMaster) {
+    console.log("erasing master lock file");
+    fs.unlinkSync("./master.lock");
+  }
+  process.exit(0);
+};
+
+process.on("SIGINT", shutdownHandler);
+process.on("SIGTERM", shutdownHandler);
+process.on("SIGKILL", shutdownHandler);
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
-const allCardsKey = "all_cards_set";
-const cardsForInsert = cards.map((c) => {
+const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
-const crypto = require("crypto");
-const getSHA1 = function (input) {
-  return crypto.createHash("sha1").update(input).digest("hex");
-};
+const userCards = {};
 
-const atomicDiffLua = `
-local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
-if #unseen == 0 then
-  return nil
-end
-
-local res = redis.call('sadd', KEYS[2], 0, unseen[1])
-if res == 0 then
-  return nil
-end
-
-return unseen[1]
-`;
-
-const atomicDiffSha1 = getSHA1(atomicDiffLua);
-
-const initializeAllCards = (function () {
-  var executed = false;
-  return async function () {
-    if (executed) {
-      return;
-    }
-
-    await Promise.all([
-      client.SADD(allCardsKey, cardsForInsert),
-      client.SCRIPT_LOAD(atomicDiffLua),
-    ]);
-    executed = true;
-  };
-})();
-
-const getUnseenCard = async function (key) {
+const getUnseenCard = async function (userId) {
   // Get the cards that the user hasn't seen yet
-  const unseenCard = await client.EVALSHA(atomicDiffSha1, {
-    keys: [allCardsKey, key],
-  });
 
-  return unseenCard ? unseenCard.toString() : undefined;
+  // First time seeing the user
+  if (!userCards[userId]) {
+    const firstCard = allCards[0];
+    userCards[userId] = new Set([firstCard]);
+    return firstCard;
+  }
+
+  // User already exists
+  const difference = allCards.filter((c) => !userCards[userId].has(c));
+  if (difference && difference.length > 0) {
+    const nextCard = difference[0];
+    userCards[userId].add(nextCard);
+    return nextCard;
+  }
+
+  return undefined;
 };
 
 const cardHandler = async (req, res, userId) => {
   const reqid = crypto.randomUUID();
-  await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-
   console.time(`${reqid} get unseen card`);
   const key = "user_id:" + userId;
   unseenCard = await getUnseenCard(key);
@@ -74,7 +73,6 @@ const cardHandler = async (req, res, userId) => {
 
 const http = require("turbo-http");
 server = http.createServer();
-const port = +process.argv[2] || 3000;
 const baseUrl = `http://0.0.0.0:${port}`;
 
 const router = async (req, res) => {
@@ -89,13 +87,7 @@ const router = async (req, res) => {
 };
 
 server.on("request", router);
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
 
-client.on("ready", () => {
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server listening at http://0.0.0.0:${port}`);
-  });
+server.listen(port, "0.0.0.0", () => {
+  console.log(`Server listening at http://0.0.0.0:${port}`);
 });
-
-client.connect();
