@@ -8,15 +8,17 @@ if (!oppositePort) {
   singleMode = true;
 }
 
+let isMaster = true;
+
 const namedPipe = require("named-pipe");
+if (isMaster) {
+  namedPipe.mkfifoSync(`./${port}`);
+  namedPipe.mkfifoSync(`./${oppositePort}`);
+}
 
-namedPipe.mkfifoSync(`./${port}`);
+const wstream = fs.createWriteStream(`./${oppositePort}`);
 
-const wstream = fs.createWriteStream(`./${port}`);
-setInterval(() => {
-  wstream.write(`hello at ${process.hrtime()[0]}\n`);
-}, 1000);
-
+const userChannel = {};
 const net = require("net");
 fs.open(
   `./${port}`,
@@ -28,18 +30,34 @@ fs.open(
     }
     const pipe = new net.Socket({ fd });
     // Now `pipe` is a stream that can be used for reading from the FIFO.
-    pipe.on("data", (data) => {
-      console.log(data.toString());
+    pipe.on("data", (buf) => {
+      data = buf.toString();
+      if (isMaster) {
+        const userId = data;
+        const card = getUnseenCardInMemory(userId);
+        wstream.write(JSON.stringify({ userId: userId, card: card }));
+        return;
+      }
+
+      const { userId: userId, card: card } = JSON.parse(data);
+      if (!userChannel[userId]) {
+        userChannel[userId] = [card];
+        return;
+      }
+      userChannel[userId].push(card);
     });
   }
 );
 
 const shutdownHandler = (signal) => {
-  console.log("starting shutdown, got signal " + signal);
-  console.log("erasing FIFO pipe");
-  fs.unlinkSync(`./${port}`);
-  fs.unlinkSync(`./-m`);
-  fs.unlinkSync(`./644`);
+  if (isMaster) {
+    console.log("starting shutdown, got signal " + signal);
+    console.log("erasing FIFO pipe");
+    fs.unlinkSync(`./${port}`);
+    fs.unlinkSync(`./${oppositePort}`);
+    fs.unlinkSync(`./-m`);
+    fs.unlinkSync(`./644`);
+  }
   process.exit(0);
 };
 
@@ -54,9 +72,7 @@ const allCards = cards.map((c) => {
 
 const userCards = {};
 
-const getUnseenCard = async function (userId) {
-  // Get the cards that the user hasn't seen yet
-
+const getUnseenCardInMemory = (userId) => {
   // First time seeing the user
   if (!userCards[userId]) {
     const firstCard = allCards[0];
@@ -72,11 +88,21 @@ const getUnseenCard = async function (userId) {
     return nextCard;
   }
 
-  return undefined;
+  return null;
+};
+
+const getUnseenCard = (userId) => {
+  if (isMaster) {
+    return getUnseenCardInMemory(userId);
+  }
+
+  wstream.write(userId);
+  const card = userChannel[userId].pop();
+  return card;
 };
 
 const cardHandler = async (req, res, userId) => {
-  unseenCard = await getUnseenCard(userId);
+  const unseenCard = getUnseenCard(userId);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
