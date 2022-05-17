@@ -68,3 +68,14 @@ test took: 55758 milliseconds| 55.76 seconds
 ```
 
 Strangely, this is even slower than without auto-pipelining enabled. With this insight, it looks like we need to revert back to the node-redis library.
+
+### v4
+
+Replace the original ZSET implementation with a normal SET implementation. Since we are not using anything related to scores in the usage, we can use the lighter SET implementation.
+
+Output:
+```
+test took: 51438 milliseconds| 51.44 seconds
+```
+
+This provides a very minimal performance improvement over the last fastest implementation (which was v2.1), however any performance improvement is still an improvement.
