@@ -19,6 +19,11 @@ const cardsForInsert = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const crypto = require("crypto");
+const getSHA1 = function (input) {
+  return crypto.createHash("sha1").update(input).digest("hex");
+};
+
 const atomicDiffLua = `
 local unseen = redis.call('sdiff', KEYS[1], KEYS[2])
 if #unseen == 0 then
@@ -33,21 +38,26 @@ end
 return unseen[1]
 `;
 
+const atomicDiffSha1 = getSHA1(atomicDiffLua);
+
 var initializeAllCards = (function () {
   var executed = false;
-  return function () {
+  return async function () {
     if (executed) {
       return;
     }
 
-    client.SADD(allCardsKey, cardsForInsert);
+    await Promise.all([
+      client.SADD(allCardsKey, cardsForInsert),
+      client.SCRIPT_LOAD(atomicDiffLua),
+    ]);
     executed = true;
   };
 })();
 
 async function getMissingCard(key) {
   // Get the cards that the user hasn't seen yet
-  const unseenCard = await client.EVAL(atomicDiffLua, {
+  const unseenCard = await client.EVALSHA(atomicDiffSha1, {
     keys: [allCardsKey, key],
   });
 
@@ -55,7 +65,7 @@ async function getMissingCard(key) {
 }
 
 app.get("/card_add", async (req, res) => {
-  initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+  await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
   const key = "user_id:" + req.query.id;
   unseenCard = await getMissingCard(key);
 
