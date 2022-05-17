@@ -15,6 +15,9 @@ client.on("ready", () => {
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCardsKey = "all_cards_zset";
+const cardsForInsert = cards.map((c) => {
+  return { score: 0, value: JSON.stringify(c) };
+});
 
 var initializeAllCards = (function () {
   var executed = false;
@@ -24,12 +27,7 @@ var initializeAllCards = (function () {
     }
 
     console.log("creating all cards zset");
-    cards.forEach((card) => {
-      client.ZADD(allCardsKey, {
-        score: 0,
-        value: JSON.stringify(card),
-      });
-    });
+    client.ZADD(allCardsKey, cardsForInsert);
     console.log("all cards zset created");
 
     executed = true;
