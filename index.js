@@ -52,7 +52,7 @@ tail.on("error", function (error) {
 const shutdownHandler = (signal) => {
   if (isMaster) {
     console.log("starting shutdown, got signal " + signal);
-    console.log("erasing FIFO pipe");
+    console.log("erasing File pipe");
     fs.unlinkSync(`./${port}`);
     fs.unlinkSync(`./${oppositePort}`);
     fs.unlinkSync(`./master.lock`);
