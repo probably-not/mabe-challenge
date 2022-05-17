@@ -29,10 +29,6 @@ tail = new Tail(`./${port}`);
 
 const userChannel = {};
 
-const pushToChannel = async (userId, card) => {
-  userChannel[userId].push(card);
-};
-
 tail.on("line", function (data) {
   if (isMaster) {
     const userId = data;
