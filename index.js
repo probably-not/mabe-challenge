@@ -74,9 +74,9 @@ const port = +process.argv[2] || 3000;
 const baseUrl = `http://0.0.0.0:${port}`;
 
 const router = async (req, res) => {
-  parsed = new URL(req.url, baseUrl);
-  if (parsed.pathname === "/card_add") {
-    await cardHandler(req, res, parsed.searchParams.get("id"));
+  if (req.url.startsWith("/card_add?")) {
+    const userId = req.url.split("?id=")[1];
+    await cardHandler(req, res, userId);
     return;
   }
 
