@@ -90,7 +90,14 @@ const getUnseenCard = (userId) => {
   }
 
   wstream.write(userId);
-  const card = userChannel[userId].pop();
+  let card = null;
+  var timeout = setInterval(function () {
+    if (userChannel[userId] !== undefined) {
+      clearInterval(timeout);
+      card = userChannel[userId].pop();
+    }
+  }, 4);
+
   return card;
 };
 
