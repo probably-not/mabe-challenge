@@ -1,16 +1,4 @@
 const fs = require("fs");
-const express = require("express");
-const app = express();
-const port = +process.argv[2] || 3000;
-
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-client.on("ready", () => {
-  app.listen(port, "0.0.0.0", () => {
-    console.log(`Example app listening at http://0.0.0.0:${port}`);
-  });
-});
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -64,22 +52,46 @@ const getUnseenCard = async function (key) {
   return unseenCard ? unseenCard.toString() : undefined;
 };
 
-app.get("/card_add", async (req, res) => {
+const cardHandler = async (req, res, userId) => {
   await initializeAllCards(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-  const key = "user_id:" + req.query.id;
+  const key = "user_id:" + userId;
   unseenCard = await getUnseenCard(key);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
-    res.send({ id: "ALL CARDS" });
+    res.writeHead(200);
+    res.end(JSON.stringify({ id: "ALL CARDS" }));
     return;
   }
 
-  res.send(unseenCard);
-});
+  res.writeHead(200);
+  res.end(unseenCard);
+};
 
-app.get("/ready", async (req, res) => {
-  res.send({ ready: true });
+const http = require("http");
+server = http.createServer();
+const port = +process.argv[2] || 3000;
+const baseUrl = `http://0.0.0.0:${port}`;
+
+const router = async (req, res) => {
+  parsed = new URL(req.url, baseUrl);
+  if (parsed.pathname === "/card_add") {
+    await cardHandler(req, res, parsed.searchParams.get("id"));
+    return;
+  }
+
+  res.writeHead(200);
+  res.end(JSON.stringify({ ready: true }));
+};
+
+server.on("request", router);
+const client = require("redis").createClient();
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+client.on("ready", () => {
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`Server listening at http://0.0.0.0:${port}`);
+  });
 });
 
 client.connect();
