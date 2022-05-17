@@ -8,7 +8,14 @@ if (!oppositePort) {
   singleMode = true;
 }
 
+const Redis = require("ioredis");
+const client = new Redis();
+
 let isMaster = true;
+const wasSet = client.setnx("master-node", "1");
+if (wasSet != 1) {
+  isMaster = false;
+}
 
 const namedPipe = require("named-pipe");
 if (isMaster) {
