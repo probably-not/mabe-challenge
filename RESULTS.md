@@ -79,3 +79,14 @@ test took: 51438 milliseconds| 51.44 seconds
 ```
 
 This provides a very minimal performance improvement over the last fastest implementation (which was v2.1), however any performance improvement is still an improvement.
+
+### v5
+
+Evaluate the SHA1 of the Lua script and load the script to the Redis memory. This lowers the amount of bandwidth necessary to make the requests to the server since we only send the SHA1 of the script.
+
+Output:
+```
+test took: 49199 milliseconds| 49.20 seconds
+```
+
+This is a 4.45151% performance boost from the v4 version, and a 168.156% performance boost from the original v0 version!
