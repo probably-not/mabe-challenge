@@ -112,3 +112,14 @@ test took: 20342 milliseconds| 20.34 seconds
 ```
 
 This is a 76.9324% performance boost from the v6 version, and a 186.191% performance boost from the original v0 version!
+
+### v8
+
+Probably the biggest win yet! After a lot of hacking around, the latest version is fully encapsulated in memory, without the need for any network calls or a Redis. This is made possible by designating a master process which is responsible for the actual indexes, and by utilizing port piping to pipe all requests to a single server.
+
+Output:
+```
+test took: 4572 milliseconds| 4.57 seconds
+```
+
+This is a 126.616% performance boost from the v7 version, and a 196.812% performance boost from the original v0 version!
