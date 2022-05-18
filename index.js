@@ -7,9 +7,10 @@ const allCards = cards.map((c) => {
 });
 
 const port = +process.argv[2] || 3000;
+const lockFile = "./master.lock";
 let isMaster = true;
 try {
-  fs.writeFileSync("./master.lock", `${port}`, { flag: "wx" });
+  fs.writeFileSync(lockFile, `${port}`, { flag: "wx" });
 } catch (err) {
   console.log("Master Lock Error", err);
   isMaster = false;
@@ -17,15 +18,13 @@ try {
 
 let masterPort;
 if (!isMaster) {
-  masterPortStr = fs.readFileSync("./master.lock", "utf8");
+  masterPortStr = fs.readFileSync(lockFile, "utf8");
   masterPort = parseInt(masterPortStr, 10);
+  fs.unlinkSync(lockFile);
 }
 
 const shutdownHandler = (signal) => {
   console.log("starting shutdown, got signal " + signal);
-  if (isMaster) {
-    fs.unlinkSync("./master.lock");
-  }
   process.exit(0);
 };
 
