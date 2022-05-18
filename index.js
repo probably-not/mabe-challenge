@@ -80,8 +80,7 @@ const INCR = (userId) => {
     userIndexes[userId] = 0;
   }
 
-  userIndexes[userId]++;
-  return userIndexes[userId];
+  return (userIndexes[userId] += 1);
 };
 
 const router = async (req, res) => {
