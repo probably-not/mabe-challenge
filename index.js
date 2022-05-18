@@ -48,12 +48,17 @@ process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
 
 const userIndexes = {};
-const pathMatch = new RegExp("/card_add?");
+const rpath = "/card_add?";
+const pathMatch = new RegExp(rpath);
 
 const router = async (req, res) => {
   res.statusCode = 200;
 
-  if (pathMatch.test(req.url)) {
+  if (
+    req.url.startsWith(rpath) ||
+    req.url.includes(rpath) ||
+    pathMatch.test(req.url)
+  ) {
     const userId = req.url.split("?id=")[1];
 
     if (!userIndexes[userId]) {

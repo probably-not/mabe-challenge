@@ -123,3 +123,14 @@ test took: 4572 milliseconds| 4.57 seconds
 ```
 
 This is a 126.616% performance boost from the v7 version, and a 196.812% performance boost from the original v0 version!
+
+### v8.1
+
+This is a pretty minor change, and in fact, will probablu slightly negatively affect performance, but only in an extremely minimal way. In local testing, the `req.url` parameter only contains the path of the request, so we can very simply check if it starts with the necessary path. However, in order to not have any issues with `req.url` possibly containing a full url, we need to add some extra conditions to check to see if the path is the path we want to return on. Well, this is the sacrifice we make to lose routing and gain performance.
+
+Output:
+```
+test took: 4472 milliseconds| 4.47 seconds
+```
+
+The performance boost here is minimal and pretty negligible, it's variable, sometimes higher, sometimes lower. Hopefully, it will go lower in the full tests.
