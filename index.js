@@ -7,6 +7,11 @@ const allCards = cards.map((c) => {
 });
 const userSawAllCards = JSON.stringify({ id: "ALL CARDS" });
 
+const allCardsBuffers = allCards.map((c) => {
+  return Buffer.from(c);
+});
+const userSawCardsBuffer = Buffer.from(userSawAllCards);
+
 const port = +process.argv[2] || 3000;
 const lockFile = "./master.lock";
 let isMaster = true;
@@ -83,36 +88,20 @@ const INCR = (userId) => {
   return userIndexes[userId];
 };
 
-const getUnseenCard = async (userId) => {
-  const idx = INCR(userId);
-  if (idx <= allCards.length) {
-    return allCards[idx - 1];
-  }
-  return undefined;
-};
-
-const cardHandler = async (req, res, userId) => {
-  unseenCard = await getUnseenCard(userId);
-
-  // ALL CARDS is sent when all cards have been given to the user
-  if (!unseenCard) {
-    res.statusCode = 200;
-    res.end(userSawAllCards);
-    return;
-  }
-
-  res.statusCode = 200;
-  res.end(unseenCard);
-};
-
 const router = async (req, res) => {
+  res.statusCode = 200;
+
   if (req.url.startsWith("/card_add?")) {
     const userId = req.url.split("?id=")[1];
-    await cardHandler(req, res, userId);
+    const idx = INCR(userId);
+    if (idx <= allCards.length) {
+      res.end(allCardsBuffers[idx - 1]);
+      return;
+    }
+    res.end(userSawCardsBuffer);
     return;
   }
 
-  res.statusCode = 200;
   res.end(JSON.stringify({ ready: true }));
 };
 
