@@ -55,25 +55,19 @@ const initializeIsMaster = (function () {
     const applied = await client.SETNX("is_master_mark", `${port}`);
     isMaster = applied;
 
+    executed = true;
     if (isMaster) {
       await subscriber.subscribe("requested_users", (userId) => {
-        console.log("requested", userId);
         const idx = INCR(userId);
         client.RPUSH("user_id:" + userId, idx.toString());
-        console.log("sent", userId, idx);
       });
     }
-
-    executed = true;
   };
 })();
 
 const getUnseenCardIdxFromMaster = async (userId) => {
   await client.publish("requested_users", userId);
-  console.log("requested", userId);
-  console.log("waiting");
   const res = await client.BRPOP("user_id:" + userId, 0);
-  console.log("received", res.key, res.element);
   return parseInt(res.element, 10);
 };
 
@@ -98,6 +92,7 @@ const getUnseenCard = async (userId) => {
 };
 
 const cardHandler = async (req, res, userId) => {
+  console.log("Master", isMaster, "received request");
   unseenCard = await getUnseenCard(userId);
 
   // ALL CARDS is sent when all cards have been given to the user
@@ -109,6 +104,7 @@ const cardHandler = async (req, res, userId) => {
 
   res.statusCode = 200;
   res.end(unseenCard);
+  console.log("Master", isMaster, "completed request");
 };
 
 const router = async (req, res) => {
