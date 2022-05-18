@@ -8,6 +8,7 @@ const allCards = cards.map((c) => {
 });
 
 const completedUsers = {};
+const userAcquiredIndexes = {};
 
 const getUnseenCard = async function (userId) {
   // Early exit if completed
@@ -15,8 +16,23 @@ const getUnseenCard = async function (userId) {
     return undefined;
   }
 
+  if (
+    !userAcquiredIndexes[userId] ||
+    userAcquiredIndexes[userId].length === 0
+  ) {
+    // Acquire indexes for in memory processing
+    const topIndex = await client.INCRBY(`${userId}:acquired`, 10);
+    const previousIndex = topIndex - 10;
+    userAcquiredIndexes[userId] = Array.from(
+      { length: 10 },
+      (_, i) => i + previousIndex + 1
+    );
+  }
+
   // Get the next index of the card that the user hasn't seen yet
-  const idx = await client.INCR(userId);
+  const idx = userAcquiredIndexes[userId].pop();
+  console.log("getting index", idx);
+  client.INCR(`${userId}:actual`);
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
