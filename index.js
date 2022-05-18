@@ -31,8 +31,6 @@ const getUnseenCard = async function (userId) {
 
   // Get the next index of the card that the user hasn't seen yet
   const idx = userAcquiredIndexes[userId].pop();
-  console.log("getting index", idx);
-  client.INCR(`${userId}:actual`);
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
