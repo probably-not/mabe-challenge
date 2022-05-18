@@ -13,6 +13,7 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
+    "ioredis": "^5.0.5",
     "redis": "^4.0.1",
     "turbo-http": "^0.3.2"
   }

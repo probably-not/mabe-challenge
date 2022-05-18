@@ -1,5 +1,4 @@
 const fs = require("fs");
-const crypto = require("crypto");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -8,37 +7,32 @@ const allCards = cards.map((c) => {
 });
 
 const completedUsers = {};
+const allCardsForID = JSON.stringify({ id: "ALL CARDS" });
 
-const getUnseenCard = async function (userId) {
+const getUnseenCard = function (userId, res) {
   // Early exit if completed
   if (completedUsers[userId]) {
-    return undefined;
-  }
-
-  // Get the next index of the card that the user hasn't seen yet
-  const idx = await client.INCR(userId);
-  if (idx <= allCards.length) {
-    return allCards[idx - 1];
-  }
-  completedUsers[userId] = true;
-  return undefined;
-};
-
-const cardHandler = async (req, res, userId) => {
-  // const reqid = crypto.randomUUID();
-  // console.time(`${reqid} get unseen card`);
-  unseenCard = await getUnseenCard(userId);
-  // console.timeEnd(`${reqid} get unseen card`);
-
-  // ALL CARDS is sent when all cards have been given to the user
-  if (!unseenCard) {
     res.statusCode = 200;
-    res.end(JSON.stringify({ id: "ALL CARDS" }));
+    res.end(allCardsForID);
     return;
   }
 
-  res.statusCode = 200;
-  res.end(unseenCard);
+  // Get the next index of the card that the user hasn't seen yet
+  client.incr(userId, (err, idx) => {
+    if (err) {
+      console.log("Redis INCR Error", err);
+      return;
+    }
+    if (idx <= allCards.length) {
+      res.statusCode = 200;
+      res.end(allCards[idx - 1]);
+      return;
+    }
+
+    completedUsers[userId] = true;
+    res.statusCode = 200;
+    res.end(allCardsForID);
+  });
 };
 
 const http = require("turbo-http");
@@ -49,7 +43,7 @@ const baseUrl = `http://0.0.0.0:${port}`;
 const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
     const userId = req.url.split("?id=")[1];
-    await cardHandler(req, res, userId);
+    getUnseenCard(userId, res);
     return;
   }
 
@@ -58,7 +52,8 @@ const router = async (req, res) => {
 };
 
 server.on("request", router);
-const client = require("redis").createClient();
+const Redis = require("ioredis");
+const client = new Redis({ enableAutoPipelining: true });
 client.on("error", (err) => console.log("Redis Client Error", err));
 
 client.on("ready", () => {
@@ -66,5 +61,3 @@ client.on("ready", () => {
     console.log(`Server listening at http://0.0.0.0:${port}`);
   });
 });
-
-client.connect();
