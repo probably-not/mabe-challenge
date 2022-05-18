@@ -7,13 +7,20 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const completedUsers = {};
+
 const getUnseenCard = async function (userId) {
+  // Early exit if completed
+  if (completedUsers[userId]) {
+    return undefined;
+  }
+
   // Get the next index of the card that the user hasn't seen yet
   const idx = await client.INCR(userId);
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
-
+  completedUsers[userId] = true;
   return undefined;
 };
 
