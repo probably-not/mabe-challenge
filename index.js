@@ -3,14 +3,10 @@ const fs = require("fs");
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCards = cards.map((c) => {
-  return JSON.stringify(c);
+  return Buffer.from(JSON.stringify(c));
 });
-const userSawAllCards = JSON.stringify({ id: "ALL CARDS" });
-
-const allCardsBuffers = allCards.map((c) => {
-  return Buffer.from(c);
-});
-const userSawCardsBuffer = Buffer.from(userSawAllCards);
+const allCardsLength = allCards.length;
+const userSawAllCards = Buffer.from(JSON.stringify({ id: "ALL CARDS" }));
 
 const port = +process.argv[2] || 3000;
 const lockFile = "./master.lock";
@@ -94,11 +90,11 @@ const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
     const userId = req.url.split("?id=")[1];
     const idx = INCR(userId);
-    if (idx <= allCards.length) {
-      res.end(allCardsBuffers[idx - 1]);
+    if (idx <= allCardsLength) {
+      res.end(allCards[idx - 1]);
       return;
     }
-    res.end(userSawCardsBuffer);
+    res.end(userSawAllCards);
     return;
   }
 
