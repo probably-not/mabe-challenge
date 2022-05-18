@@ -61,16 +61,6 @@ if (!isMaster) {
   server = forwarder;
 }
 
-const client = require("redis").createClient();
-
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-client.on("ready", () => {
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server listening at http://0.0.0.0:${port}`);
-  });
-});
-
 const userIndexes = {};
 
 const INCR = (userId) => {
@@ -101,4 +91,6 @@ const router = async (req, res) => {
 };
 
 server.on("request", router);
-client.connect();
+server.listen(port, "0.0.0.0", () => {
+  console.log(`Server listening at http://0.0.0.0:${port}`);
+});
