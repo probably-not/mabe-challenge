@@ -14,8 +14,12 @@ let isMaster = true;
 try {
   fs.writeFileSync(lockFile, `${port}`, { flag: "wx" });
 } catch (err) {
-  console.log("Master Lock Error", err);
-  isMaster = false;
+  if (err.message.startsWith("EEXIST: file already exists")) {
+    isMaster = false;
+  } else {
+    console.log("Master Lock Error", err);
+    throw err;
+  }
 }
 
 let masterPort;
@@ -83,7 +87,6 @@ const http = require("turbo-http");
 server = http.createServer();
 
 if (!isMaster) {
-  console.log(`Forwarding from ${port} to ${masterPort}`);
   server = forwarder;
 }
 
