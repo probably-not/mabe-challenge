@@ -1,11 +1,12 @@
 const fs = require("fs");
-const crypto = require("crypto");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
+
+const client = require("redis").createClient();
 
 const getUnseenCard = async function (key) {
   // Get the next index of the card that the user hasn't seen yet
@@ -18,11 +19,8 @@ const getUnseenCard = async function (key) {
 };
 
 const cardHandler = async (req, res, userId) => {
-  // const reqid = crypto.randomUUID();
-  // console.time(`${reqid} get unseen card`);
   const key = "user_id:" + userId;
   unseenCard = await getUnseenCard(key);
-  // console.timeEnd(`${reqid} get unseen card`);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
@@ -52,7 +50,6 @@ const router = async (req, res) => {
 };
 
 server.on("request", router);
-const client = require("redis").createClient();
 client.on("error", (err) => console.log("Redis Client Error", err));
 
 client.on("ready", () => {
