@@ -1,5 +1,4 @@
 const fs = require("fs");
-const crypto = require("crypto");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -21,8 +20,9 @@ const INCR = (userId) => {
 };
 
 const port = +process.argv[2] || 3000;
+const portmapping = { 4001: 4002, 4002: 4001 };
+const oppositePort = portmapping[port] || 3001;
 let isMaster = true;
-let masterPort;
 
 const turbo = require("turbo-net");
 const tcpServer = turbo.createServer(function (socket) {
@@ -52,11 +52,11 @@ let tcpSocket;
 const initializeTCP = (() => {
   var executed = false;
   return async function () {
-    if (executed) {
+    if (executed || isMaster) {
       return;
     }
 
-    await connectServerAndClient();
+    await connectClient();
     executed = true;
   };
 })();
@@ -69,9 +69,7 @@ const initializeIsMaster = (function () {
     }
 
     const applied = await client.SETNX("is_master_mark", `${port}`);
-    const stored = await client.GET("is_master_mark");
     isMaster = applied;
-    masterPort = stored;
     executed = true;
   };
 })();
@@ -80,21 +78,29 @@ const getUnseenCardIdxFromMaster = async (userId) => {
   return await readFromConnectionWrapper(userId);
 };
 
-const connectServerAndClient = () => {
+const connectClient = () => {
   return new Promise((resolve, reject) => {
     if (isMaster) {
-      tcpServer.listen(8080, function () {
-        console.log(`TCP Server listening at http://0.0.0.0:8080`);
-      });
-      tcpServer.on("listening", () => {
-        resolve(true);
-      });
+      resolve(true);
       return;
     }
 
-    tcpSocket = turbo.connect(8080);
+    tcpSocket = turbo.connect(oppositePort + 8000);
     tcpSocket.on("connect", () => {
-      console.log(`TCP Client connected to http://0.0.0.0:8080`);
+      console.log(
+        `TCP Client connected to http://0.0.0.0:${oppositePort + 8000}`
+      );
+      resolve(true);
+    });
+  });
+};
+
+const connectServer = () => {
+  return new Promise((resolve, _reject) => {
+    tcpServer.listen(port + 8000, function () {
+      console.log(`TCP Server listening at http://0.0.0.0:${port + 8000}`);
+    });
+    tcpServer.on("listening", () => {
       resolve(true);
     });
   });
@@ -177,4 +183,5 @@ client.on("ready", () => {
   });
 });
 
+connectServer();
 client.connect();
