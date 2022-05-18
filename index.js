@@ -26,6 +26,16 @@ if (!isMaster) {
 
 const shutdownHandler = (signal) => {
   console.log("starting shutdown, got signal " + signal);
+  if (isMaster) {
+    try {
+      fs.unlinkSync(lockFile);
+    } catch (err) {
+      console.log(
+        "failed to delete lockfile probably because it's already been deleted",
+        err
+      );
+    }
+  }
   process.exit(0);
 };
 
