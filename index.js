@@ -84,7 +84,7 @@ const forwarder = net.createServer(function (from) {
 });
 
 const http = require("turbo-http");
-server = http.createServer();
+let server = http.createServer();
 
 if (!isMaster) {
   server = forwarder;
