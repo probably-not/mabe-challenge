@@ -41,8 +41,7 @@ const cardHandler = async (req, res, userId) => {
   res.end(unseenCard);
 };
 
-const http = require("turbo-http");
-server = http.createServer();
+const polkadot = require("polkadot");
 const port = +process.argv[2] || 3000;
 const baseUrl = `http://0.0.0.0:${port}`;
 
@@ -57,7 +56,7 @@ const router = async (req, res) => {
   res.end(JSON.stringify({ ready: true }));
 };
 
-server.on("request", router);
+const server = polkadot(router);
 const client = require("redis").createClient();
 client.on("error", (err) => console.log("Redis Client Error", err));
 
