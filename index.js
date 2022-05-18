@@ -7,9 +7,19 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const userIndexes = {};
+
 const getUnseenCard = async function (key) {
   // Get the next index of the card that the user hasn't seen yet
-  const idx = await client.INCR(key);
+  if (!userIndexes[key]) {
+    // Init
+    userIndexes[key] = 0;
+  }
+
+  // INCR
+  userIndexes[key]++;
+
+  const idx = userIndexes[key];
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
