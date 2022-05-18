@@ -13,6 +13,7 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
-    "turbo-http": "^0.3.2"
+    "turbo-http": "^0.3.2",
+    "turbo-net": "^1.4.0"
   }
 }

@@ -77,16 +77,34 @@ const router = async (req, res) => {
   res.end(JSON.stringify({ ready: true }));
 };
 
-/* Define the servers and start listening to requests */
+function pipe(from, to) {
+  const bufferSize = 4 * 1024;
 
-const net = require("net");
-const forwarder = net.createServer(function (from) {
-  const to = net.createConnection({
-    host: "0.0.0.0",
-    port: masterPort,
-  });
-  from.pipe(to);
-  to.pipe(from);
+  const onwrite = (err, _buf, _n) => {
+    if (err) {
+      console.log("onwrite error", err);
+      return;
+    }
+    from.read(Buffer.allocUnsafe(bufferSize), onread);
+  };
+
+  const onread = (err, buf, n) => {
+    if (err) {
+      console.log("onread error", err);
+      return;
+    }
+    to.write(buf, n, onwrite);
+  };
+
+  from.read(Buffer.allocUnsafe(bufferSize), onread);
+}
+
+/* Define the servers and start listening to requests */
+const turbo = require("turbo-net");
+const forwarder = turbo.createServer((from) => {
+  const to = turbo.connect(masterPort, "0.0.0.0");
+  pipe(from, to);
+  pipe(to, from);
 });
 
 const http = require("turbo-http");
