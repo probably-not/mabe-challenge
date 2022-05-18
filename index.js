@@ -59,7 +59,7 @@ const router = async (req, res) => {
     req.url.includes(rpath) ||
     pathMatch.test(req.url)
   ) {
-    const userId = req.url.split("?id=")[1];
+    const userId = req.url.split("id=")[1];
 
     if (!userIndexes[userId]) {
       userIndexes[userId] = 0;
