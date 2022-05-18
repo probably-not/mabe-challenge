@@ -6,8 +6,47 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+let isMaster = true;
+try {
+  fs.writeFileSync("./master.lock", "1", { flag: "wx" });
+} catch (err) {
+  console.log("Master Lock Error", err);
+  isMaster = false;
+}
+
+const shutdownHandler = (signal) => {
+  console.log("starting shutdown, got signal " + signal);
+  if (isMaster) {
+    fs.unlinkSync("./master.lock");
+  }
+  process.exit(0);
+};
+
+process.on("SIGINT", shutdownHandler);
+process.on("SIGTERM", shutdownHandler);
+
+const port = +process.argv[2] || 3000;
+const portmapping = { 4001: 4002, 4002: 4001 };
+const oppositePort = portmapping[port];
+const isSingleton = !oppositePort;
+
+const net = require("net");
+const forwarder = net.createServer(function (from) {
+  const to = net.createConnection({
+    host: "0.0.0.0",
+    port: oppositePort,
+  });
+  from.pipe(to);
+  to.pipe(from);
+});
+
 const http = require("turbo-http");
 server = http.createServer();
+
+if (!isMaster && !isSingleton) {
+  console.log(`Forwarding from ${port} to ${oppositePort}`);
+  server = forwarder;
+}
 
 const client = require("redis").createClient();
 
@@ -32,41 +71,8 @@ const INCR = (userId) => {
   return userIndexes[userId];
 };
 
-const port = +process.argv[2] || 3000;
-let isMaster = true;
-
-const initializeIsMaster = (function () {
-  var executed = false;
-  return async function () {
-    if (executed) {
-      return;
-    }
-
-    const applied = await client.SETNX("is_master_mark", `${port}`);
-    isMaster = applied;
-    executed = true;
-  };
-})();
-
-const getUnseenCardIdxFromMaster = async (userId) => {
-  // TODO
-  return undefined;
-};
-
 const getUnseenCard = async (userId) => {
-  if (isMaster) {
-    const idx = INCR(userId);
-    if (idx <= allCards.length) {
-      return allCards[idx - 1];
-    }
-    return undefined;
-  }
-
-  const idx = await getUnseenCardIdxFromMaster(userId);
-  if (!idx) {
-    return undefined;
-  }
-
+  const idx = INCR(userId);
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
@@ -89,7 +95,6 @@ const cardHandler = async (req, res, userId) => {
 
 const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
-    await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
     const userId = req.url.split("?id=")[1];
     await cardHandler(req, res, userId);
     return;
