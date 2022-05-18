@@ -72,27 +72,27 @@ const initializeIsMaster = (function () {
 })();
 
 const getUnseenCardIdxFromMaster = async (userId) => {
-  let idx;
-
-  const readUserIdx = async (parsed) => {
-    idx = parsed;
-  };
-
   tcpSocket.write(Buffer.from(userId + "\n"));
-  tcpSocket.read(Buffer.alloc(10), (err, buf, _read) => {
-    if (err) {
-      console.log("Client Socket Read Error", err);
-      return;
-    }
-
-    const data = buf.toString();
-    const parsed = parseInt(data, 10);
-    console.log(parsed);
-    readUserIdx(parsed);
-  });
-
+  const idx = await readFromConnectionWrapper(userId);
   console.log(idx);
   return idx;
+};
+
+const readFromConnectionWrapper = (userId) => {
+  return new Promise((resolve, reject) => {
+    tcpSocket.read(Buffer.alloc(10), (err, buf, _read) => {
+      if (err) {
+        console.log("Client Socket Read Error", err);
+        reject(err);
+        return;
+      }
+
+      const data = buf.toString();
+      const parsed = parseInt(data, 10);
+      console.log(parsed);
+      resolve(parsed);
+    });
+  });
 };
 
 const getUnseenCard = async (userId) => {
