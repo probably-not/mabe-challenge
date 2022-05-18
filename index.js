@@ -48,6 +48,18 @@ const tcpServer = turbo.createServer(function (socket) {
 
 let tcpSocket;
 
+const initializeTCP = (() => {
+  var executed = false;
+  return async function () {
+    if (executed) {
+      return;
+    }
+
+    await connectServerAndClient();
+    executed = true;
+  };
+})();
+
 const initializeIsMaster = (function () {
   var executed = false;
   return async function () {
@@ -57,27 +69,37 @@ const initializeIsMaster = (function () {
 
     const applied = await client.SETNX("is_master_mark", "1");
     isMaster = applied;
-
-    if (isMaster) {
-      tcpServer.listen(8080, function () {
-        console.log(`TCP Server listening at http://0.0.0.0:8080`);
-      });
-    } else {
-      tcpSocket = turbo.connect(8080);
-      console.log(`TCP Client connected to http://0.0.0.0:8080`);
-    }
-
     executed = true;
   };
 })();
 
 const getUnseenCardIdxFromMaster = async (userId) => {
-  tcpSocket.write(Buffer.from(userId + "\n"));
   return await readFromConnectionWrapper(userId);
+};
+
+const connectServerAndClient = () => {
+  return new Promise((resolve, reject) => {
+    if (isMaster) {
+      tcpServer.listen(8080, function () {
+        console.log(`TCP Server listening at http://0.0.0.0:8080`);
+      });
+      tcpServer.on("listening", () => {
+        resolve(true);
+      });
+      return;
+    }
+
+    tcpSocket = turbo.connect(8080);
+    tcpSocket.on("connect", () => {
+      console.log(`TCP Client connected to http://0.0.0.0:8080`);
+      resolve(true);
+    });
+  });
 };
 
 const readFromConnectionWrapper = (userId) => {
   return new Promise((resolve, reject) => {
+    tcpSocket.write(Buffer.from(userId + "\n"));
     tcpSocket.read(Buffer.alloc(10), (err, buf, _read) => {
       if (err) {
         console.log("Client Socket Read Error", err);
@@ -132,6 +154,7 @@ server = http.createServer();
 const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
     await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+    await initializeTCP(); // Needs to run when requests are live so that it doesn't get flushed by the tester
     const userId = req.url.split("?id=")[1];
     await cardHandler(req, res, userId);
     return;
