@@ -44,13 +44,23 @@ process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
 
 const net = require("net");
-const forwarder = net.createServer(function (from) {
-  const to = net.createConnection({
-    host: "0.0.0.0",
-    port: masterPort,
+const stream = require("stream");
+const turbo = require("turbo-net");
+const forwarder = turbo.createServer(function (socket) {
+  socket.read(Buffer.alloc(32 * 1024), function onread(err, buf, _read) {
+    if (err) {
+      console.log("Socket read error", err);
+    }
+
+    const to = net.createConnection({
+      host: "0.0.0.0",
+      port: masterPort,
+    });
+
+    const from = stream.Duplex.from(buf);
+    from.pipe(to);
+    to.pipe(from);
   });
-  from.pipe(to);
-  to.pipe(from);
 });
 
 const http = require("turbo-http");
