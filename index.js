@@ -43,6 +43,32 @@ const shutdownHandler = (signal) => {
 process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
 
+const userIndexes = {};
+
+const router = async (req, res) => {
+  res.statusCode = 200;
+
+  if (req.url.startsWith("/card_add?")) {
+    const userId = req.url.split("?id=")[1];
+
+    if (!userIndexes[userId]) {
+      userIndexes[userId] = 0;
+    }
+    const idx = (userIndexes[userId] += 1);
+
+    if (idx <= allCardsLength) {
+      res.end(allCards[idx - 1]);
+      return;
+    }
+    res.end(userSawAllCards);
+    return;
+  }
+
+  res.end(JSON.stringify({ ready: true }));
+};
+
+/* Define the servers and start listening to requests */
+
 const net = require("net");
 const forwarder = net.createServer(function (from) {
   const to = net.createConnection({
@@ -60,35 +86,6 @@ if (!isMaster) {
   console.log(`Forwarding from ${port} to ${masterPort}`);
   server = forwarder;
 }
-
-const userIndexes = {};
-
-const INCR = (userId) => {
-  // Get the next index of the card that the user hasn't seen yet
-  if (!userIndexes[userId]) {
-    // Init
-    userIndexes[userId] = 0;
-  }
-
-  return (userIndexes[userId] += 1);
-};
-
-const router = async (req, res) => {
-  res.statusCode = 200;
-
-  if (req.url.startsWith("/card_add?")) {
-    const userId = req.url.split("?id=")[1];
-    const idx = INCR(userId);
-    if (idx <= allCardsLength) {
-      res.end(allCards[idx - 1]);
-      return;
-    }
-    res.end(userSawAllCards);
-    return;
-  }
-
-  res.end(JSON.stringify({ ready: true }));
-};
 
 server.on("request", router);
 server.listen(port, "0.0.0.0", () => {
