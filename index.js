@@ -8,10 +8,32 @@ const allCards = cards.map((c) => {
 
 const client = require("redis").createClient();
 
-const getUnseenCard = async function (key) {
+const userIndexes = {};
+const portmap = { 4001: [4002, 0, 50], 4002: [4001, 50, 99] };
+const [oppositePort, baseIdx, maxIdx] = portmap[port] || [3000, 0, 100];
+const [_myPort, _oppositeBaseIdx, oppositeMaxIdx] = portmap[port] || [
+  3000, 0, 99,
+];
+console.log(oppositePort, baseIdx, maxIdx, oppositeMaxIdx);
+
+const INCR = (userId) => {
   // Get the next index of the card that the user hasn't seen yet
-  const idx = await client.INCR(key);
-  if (idx <= allCards.length) {
+  if (!userIndexes[userId]) {
+    // Init
+    userIndexes[userId] = baseIdx;
+  }
+
+  userIndexes[userId]++;
+  return userIndexes[userId];
+};
+
+const getUnseenCard = async function (userId) {
+  // Get the next index of the card that the user hasn't seen yet
+  const idx = INCR(userId);
+
+  // If we're within our owned indices we return it from memory
+  if (idx - 1 < maxIdx) {
+    client.INCR(`${port}:${userId}`); // No await so we don't block?
     return allCards[idx - 1];
   }
 
@@ -19,8 +41,7 @@ const getUnseenCard = async function (key) {
 };
 
 const cardHandler = async (req, res, userId) => {
-  const key = "user_id:" + userId;
-  unseenCard = await getUnseenCard(key);
+  unseenCard = await getUnseenCard(userId);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
