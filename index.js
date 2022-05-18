@@ -7,9 +7,9 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
-const getUnseenCard = async function (key) {
+const getUnseenCard = async function (userId) {
   // Get the next index of the card that the user hasn't seen yet
-  const idx = await client.INCR(key);
+  const idx = await client.INCR(userId);
   if (idx <= allCards.length) {
     return allCards[idx - 1];
   }
@@ -20,8 +20,7 @@ const getUnseenCard = async function (key) {
 const cardHandler = async (req, res, userId) => {
   // const reqid = crypto.randomUUID();
   // console.time(`${reqid} get unseen card`);
-  const key = "user_id:" + userId;
-  unseenCard = await getUnseenCard(key);
+  unseenCard = await getUnseenCard(userId);
   // console.timeEnd(`${reqid} get unseen card`);
 
   // ALL CARDS is sent when all cards have been given to the user
