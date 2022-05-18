@@ -6,12 +6,19 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const port = +process.argv[2] || 3000;
 let isMaster = true;
 try {
-  fs.writeFileSync("./master.lock", "1", { flag: "wx" });
+  fs.writeFileSync("./master.lock", `${port}`, { flag: "wx" });
 } catch (err) {
   console.log("Master Lock Error", err);
   isMaster = false;
+}
+
+let masterPort;
+if (!isMaster) {
+  masterPortStr = fs.readFileSync("./master.lock", "utf8");
+  masterPort = parseInt(masterPortStr, 10);
 }
 
 const shutdownHandler = (signal) => {
@@ -25,16 +32,11 @@ const shutdownHandler = (signal) => {
 process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
 
-const port = +process.argv[2] || 3000;
-const portmapping = { 4001: 4002, 4002: 4001 };
-const oppositePort = portmapping[port];
-const isSingleton = !oppositePort;
-
 const net = require("net");
 const forwarder = net.createServer(function (from) {
   const to = net.createConnection({
     host: "0.0.0.0",
-    port: oppositePort,
+    port: masterPort,
   });
   from.pipe(to);
   to.pipe(from);
@@ -43,8 +45,8 @@ const forwarder = net.createServer(function (from) {
 const http = require("turbo-http");
 server = http.createServer();
 
-if (!isMaster && !isSingleton) {
-  console.log(`Forwarding from ${port} to ${oppositePort}`);
+if (!isMaster) {
+  console.log(`Forwarding from ${port} to ${masterPort}`);
   server = forwarder;
 }
 
