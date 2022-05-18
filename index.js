@@ -1,10 +1,32 @@
 const fs = require("fs");
-const crypto = require("crypto");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
 const allCards = cards.map((c) => {
   return JSON.stringify(c);
+});
+
+const http = require("turbo-http");
+server = http.createServer();
+
+const client = require("redis").createClient();
+const subscriber = client.duplicate();
+
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+client.on("ready", () => {
+  subscriber.connect();
+  console.log("connecting to subscriber");
+});
+
+subscriber.on("error", (err) =>
+  console.log("Redis Subscriber Client Error", err)
+);
+
+subscriber.on("ready", () => {
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`Server listening at http://0.0.0.0:${port}`);
+  });
 });
 
 const userIndexes = {};
@@ -23,43 +45,6 @@ const INCR = (userId) => {
 const port = +process.argv[2] || 3000;
 let isMaster = true;
 
-const turbo = require("turbo-net");
-const tcpServer = turbo.createServer(function (socket) {
-  socket.read(Buffer.alloc(32 * 1024), function onread(err, buf, _read) {
-    if (err) {
-      console.log("Socket Read Error", err);
-      return;
-    }
-
-    const data = buf.toString();
-    const userId = data.split("\n")[0];
-    userUnseenCardIdx = INCR(userId);
-    const out = Buffer.from(userUnseenCardIdx.toString(), "utf8");
-
-    socket.write(out, out.length, function (err) {
-      if (err) {
-        console.log("Socket Write Error", err);
-        return;
-      }
-      socket.read(buf, onread);
-    });
-  });
-});
-
-let tcpSocket;
-
-const initializeTCP = (() => {
-  var executed = false;
-  return async function () {
-    if (executed) {
-      return;
-    }
-
-    await connectServerAndClient();
-    executed = true;
-  };
-})();
-
 const initializeIsMaster = (function () {
   var executed = false;
   return async function () {
@@ -67,51 +52,29 @@ const initializeIsMaster = (function () {
       return;
     }
 
-    const applied = await client.SETNX("is_master_mark", "1");
+    const applied = await client.SETNX("is_master_mark", `${port}`);
     isMaster = applied;
+
+    if (isMaster) {
+      await subscriber.subscribe("requested_users", (userId) => {
+        console.log("requested", userId);
+        const idx = INCR(userId);
+        client.RPUSH("user_id:" + userId, idx.toString());
+        console.log("sent", userId, idx);
+      });
+    }
+
     executed = true;
   };
 })();
 
 const getUnseenCardIdxFromMaster = async (userId) => {
-  return await readFromConnectionWrapper(userId);
-};
-
-const connectServerAndClient = () => {
-  return new Promise((resolve, reject) => {
-    if (isMaster) {
-      tcpServer.listen(8080, function () {
-        console.log(`TCP Server listening at http://0.0.0.0:8080`);
-      });
-      tcpServer.on("listening", () => {
-        resolve(true);
-      });
-      return;
-    }
-
-    tcpSocket = turbo.connect(8080);
-    tcpSocket.on("connect", () => {
-      console.log(`TCP Client connected to http://0.0.0.0:8080`);
-      resolve(true);
-    });
-  });
-};
-
-const readFromConnectionWrapper = (userId) => {
-  return new Promise((resolve, reject) => {
-    tcpSocket.write(Buffer.from(userId + "\n"));
-    tcpSocket.read(Buffer.alloc(10), (err, buf, _read) => {
-      if (err) {
-        console.log("Client Socket Read Error", err);
-        reject(err);
-        return;
-      }
-
-      const data = buf.toString();
-      const parsed = parseInt(data, 10);
-      resolve(parsed);
-    });
-  });
+  await client.publish("requested_users", userId);
+  console.log("requested", userId);
+  console.log("waiting");
+  const res = await client.BRPOP("user_id:" + userId, 0);
+  console.log("received", res.key, res.element);
+  return parseInt(res.element, 10);
 };
 
 const getUnseenCard = async (userId) => {
@@ -148,13 +111,9 @@ const cardHandler = async (req, res, userId) => {
   res.end(unseenCard);
 };
 
-const http = require("turbo-http");
-server = http.createServer();
-
 const router = async (req, res) => {
   if (req.url.startsWith("/card_add?")) {
     await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-    await initializeTCP(); // Needs to run when requests are live so that it doesn't get flushed by the tester
     const userId = req.url.split("?id=")[1];
     await cardHandler(req, res, userId);
     return;
@@ -165,13 +124,4 @@ const router = async (req, res) => {
 };
 
 server.on("request", router);
-const client = require("redis").createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-
-client.on("ready", () => {
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`Server listening at http://0.0.0.0:${port}`);
-  });
-});
-
 client.connect();
