@@ -1,5 +1,4 @@
 const fs = require("fs");
-const crypto = require("crypto");
 
 const cardsData = fs.readFileSync("./cards.json");
 const cards = JSON.parse(cardsData);
@@ -39,10 +38,7 @@ const getUnseenCard = async function (userId) {
 };
 
 const cardHandler = async (req, res, userId) => {
-  // const reqid = crypto.randomUUID();
-  // console.time(`${reqid} get unseen card`);
   unseenCard = await getUnseenCard(userId);
-  // console.timeEnd(`${reqid} get unseen card`);
 
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
