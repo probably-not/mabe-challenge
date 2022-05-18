@@ -65,9 +65,8 @@ const http = require("turbo-http");
 server = http.createServer();
 
 const router = async (req, res) => {
-  await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
-
   if (req.url.startsWith("/card_add?")) {
+    await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
     const userId = req.url.split("?id=")[1];
     await cardHandler(req, res, userId);
     return;
