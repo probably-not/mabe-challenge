@@ -7,6 +7,23 @@ const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
 
+const port = +process.argv[2] || 3000;
+let isMaster = true;
+
+const initializeIsMaster = (function () {
+  var executed = false;
+  return async function () {
+    if (executed) {
+      return;
+    }
+
+    const applied = await client.SETNX("is_master_mark", "1");
+    isMaster = applied;
+    console.log("am i master?", port, isMaster);
+    executed = true;
+  };
+})();
+
 const userIndexes = {};
 
 const getUnseenCard = async function (key) {
@@ -46,10 +63,10 @@ const cardHandler = async (req, res, userId) => {
 
 const http = require("turbo-http");
 server = http.createServer();
-const port = +process.argv[2] || 3000;
-const baseUrl = `http://0.0.0.0:${port}`;
 
 const router = async (req, res) => {
+  await initializeIsMaster(); // Needs to run when requests are live so that it doesn't get flushed by the tester
+
   if (req.url.startsWith("/card_add?")) {
     const userId = req.url.split("?id=")[1];
     await cardHandler(req, res, userId);
