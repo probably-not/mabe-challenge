@@ -13,6 +13,7 @@
   "author": "Moonactive",
   "license": "ISC",
   "dependencies": {
+    "polkadot": "^1.0.0",
     "turbo-http": "^0.3.2"
   }
 }

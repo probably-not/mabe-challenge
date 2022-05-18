@@ -47,10 +47,8 @@ const userIndexes = {};
 
 const router = async (req, res) => {
   res.statusCode = 200;
-
-  if (req.url.startsWith("/card_add?")) {
-    const userId = req.url.split("?id=")[1];
-
+  if (req.path === "/card_add") {
+    const userId = req.query.id;
     if (!userIndexes[userId]) {
       userIndexes[userId] = 0;
     }
@@ -79,15 +77,14 @@ const forwarder = net.createServer(function (from) {
   to.pipe(from);
 });
 
-const http = require("turbo-http");
-server = http.createServer();
+const polkadot = require("polkadot");
+let server = polkadot(router);
 
 if (!isMaster) {
   console.log(`Forwarding from ${port} to ${masterPort}`);
   server = forwarder;
 }
 
-server.on("request", router);
 server.listen(port, "0.0.0.0", () => {
   console.log(`Server listening at http://0.0.0.0:${port}`);
 });
