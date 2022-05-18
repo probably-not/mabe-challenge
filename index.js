@@ -48,11 +48,12 @@ process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
 
 const userIndexes = {};
+const pathMatch = new RegExp("/card_add?");
 
 const router = async (req, res) => {
   res.statusCode = 200;
 
-  if (req.url.startsWith("/card_add?")) {
+  if (pathMatch.test(req.url)) {
     const userId = req.url.split("?id=")[1];
 
     if (!userIndexes[userId]) {
