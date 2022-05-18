@@ -73,9 +73,7 @@ const initializeIsMaster = (function () {
 
 const getUnseenCardIdxFromMaster = async (userId) => {
   tcpSocket.write(Buffer.from(userId + "\n"));
-  const idx = await readFromConnectionWrapper(userId);
-  console.log(idx);
-  return idx;
+  return await readFromConnectionWrapper(userId);
 };
 
 const readFromConnectionWrapper = (userId) => {
@@ -89,7 +87,6 @@ const readFromConnectionWrapper = (userId) => {
 
       const data = buf.toString();
       const parsed = parseInt(data, 10);
-      console.log(parsed);
       resolve(parsed);
     });
   });
