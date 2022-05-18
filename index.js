@@ -5,6 +5,7 @@ const cards = JSON.parse(cardsData);
 const allCards = cards.map((c) => {
   return JSON.stringify(c);
 });
+const userSawAllCards = JSON.stringify({ id: "ALL CARDS" });
 
 const port = +process.argv[2] || 3000;
 const lockFile = "./master.lock";
@@ -86,7 +87,7 @@ const cardHandler = async (req, res, userId) => {
   // ALL CARDS is sent when all cards have been given to the user
   if (!unseenCard) {
     res.statusCode = 200;
-    res.end(JSON.stringify({ id: "ALL CARDS" }));
+    res.end(userSawAllCards);
     return;
   }
 
