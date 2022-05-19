@@ -1,0 +1,387 @@
+Statistical profiling result from isolate-0x128008000-87857-v8.log, (4035 ticks, 77 unaccounted, 0 excluded).
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+     33    0.8%          /usr/lib/system/libsystem_malloc.dylib
+     15    0.4%          /usr/lib/system/libdyld.dylib
+     11    0.3%          /usr/lib/system/libsystem_platform.dylib
+     10    0.2%          /usr/lib/system/libsystem_c.dylib
+      4    0.1%          /usr/lib/system/libsystem_pthread.dylib
+      3    0.1%          /usr/lib/libc++.1.dylib
+      2    0.0%          /usr/lib/libc++abi.dylib
+      1    0.0%          /usr/lib/system/libsystem_kernel.dylib
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+    110    2.7%    2.8%  LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+    102    2.5%    2.6%  LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     44    1.1%    1.1%  LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+     39    1.0%    1.0%  RegExp: ^([A-Z-]+) ([^ ]+) HTTP\/(\d)\.(\d)$
+     27    0.7%    0.7%  RegExp: ^([^: \t]+):[ \t]*((?:.*[^ \t])|)
+     18    0.4%    0.5%  LazyCompile: *HTTPParser /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:6:20
+     16    0.4%    0.4%  RegExp: ^Content-Length$
+     10    0.2%    0.3%  LazyCompile: *getEncodingOps node:buffer:678:24
+     10    0.2%    0.3%  LazyCompile: *_writev /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:173:11
+     10    0.2%    0.3%  LazyCompile: *_flushHeaders /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:55:17
+      9    0.2%    0.2%  LazyCompile: *emit node:events:340:44
+      9    0.2%    0.2%  LazyCompile: *Request /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/request.js:4:15
+      8    0.2%    0.2%  LazyCompile: *slice node:buffer:629:12
+      8    0.2%    0.2%  LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      4    0.1%    0.1%  LazyCompile: *_onwrite /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:148:12
+      2    0.0%    0.1%  LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      1    0.0%    0.0%  LazyCompile: *setHeader /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:29:13
+      1    0.0%    0.0%  LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      1    0.0%    0.0%  Function: ^router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      1    0.0%    0.0%  Function: ^getEncodingOps node:buffer:678:24
+      1    0.0%    0.0%  Function: ^_appendHeader /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:45:17
+
+ [C++]:
+   ticks  total  nonlib   name
+   1959   48.6%   49.5%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+   1020   25.3%   25.8%  T __kernelrpc_mach_port_get_refs
+     54    1.3%    1.4%  T __kernelrpc_mach_vm_protect_trap
+     43    1.1%    1.1%  t ___pfz_setup
+     31    0.8%    0.8%  t void node::Buffer::(anonymous namespace)::StringSlice<(node::encoding)0>(v8::FunctionCallbackInfo<v8::Value> const&)
+     29    0.7%    0.7%  T _posix_spawnattr_init
+     28    0.7%    0.7%  T __pthread_exit_if_canceled
+     22    0.5%    0.6%  t void node::Buffer::(anonymous namespace)::StringWrite<(node::encoding)0>(v8::FunctionCallbackInfo<v8::Value> const&)
+     19    0.5%    0.5%  T _voucher_mach_msg_adopt
+     19    0.5%    0.5%  T _napi_get_element
+     18    0.4%    0.5%  T node_napi_env__::can_call_into_js() const
+     17    0.4%    0.4%  t v8impl::(anonymous namespace)::FunctionCallbackWrapper::Invoke(v8::FunctionCallbackInfo<v8::Value> const&)
+     15    0.4%    0.4%  T _napi_get_array_length
+     13    0.3%    0.3%  T _napi_get_cb_info
+     12    0.3%    0.3%  T _task_restartable_ranges_synchronize
+     12    0.3%    0.3%  T _napi_get_buffer_info
+     11    0.3%    0.3%  T node::Buffer::Data(v8::Local<v8::Value>)
+     11    0.3%    0.3%  T _napi_make_callback
+     10    0.2%    0.3%  t __pthread_main_thread_init
+      9    0.2%    0.2%  T __platform_strcmp
+      7    0.2%    0.2%  T node::InternalCallbackScope::InternalCallbackScope(node::Environment*, v8::Local<v8::Object>, node::async_context const&, int)
+      7    0.2%    0.2%  T node::InternalCallbackScope::Close()
+      7    0.2%    0.2%  T _napi_get_value_uint32
+      5    0.1%    0.1%  t v8impl::(anonymous namespace)::FunctionCallbackWrapper::Args(napi_value__**, unsigned long)
+      5    0.1%    0.1%  t node::ArrayBufferViewContents<unsigned char, 64ul>::Read(v8::Local<v8::ArrayBufferView>)
+      5    0.1%    0.1%  t __pthread_strtoul
+      5    0.1%    0.1%  t __os_nospin_lock_lock_slow
+      4    0.1%    0.1%  t node::AsyncHooks::pop_async_context(double)
+      4    0.1%    0.1%  T node::MakeCallback(v8::Isolate*, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*, node::async_context)
+      4    0.1%    0.1%  T node::InternalMakeCallback(node::Environment*, v8::Local<v8::Object>, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*, node::async_context)
+      4    0.1%    0.1%  T node::Buffer::Length(v8::Local<v8::Value>)
+      3    0.1%    0.1%  t std::__1::vector<v8::Global<v8::Context>, std::__1::allocator<v8::Global<v8::Context> > >::__append(unsigned long)
+      3    0.1%    0.1%  t node::AsyncHooks::push_async_context(double, double, v8::Local<v8::Object>)
+      3    0.1%    0.1%  T _posix_spawn
+      3    0.1%    0.1%  T _kdebug_trace
+      2    0.0%    0.1%  t std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> > std::__1::__pad_and_output<char, std::__1::char_traits<char> >(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> >, char const*, char const*, char const*, std::__1::ios_base&, char)
+      2    0.0%    0.1%  t __pthread_mutex_global_init
+      2    0.0%    0.1%  t __pthread_bsdthread_init
+      2    0.0%    0.1%  t __os_once_gate_wait
+      2    0.0%    0.1%  T node::contextify::ContextifyContext::CompileFunction(v8::FunctionCallbackInfo<v8::Value> const&)
+      2    0.0%    0.1%  T _os_unfair_recursive_lock_lock_with_options
+      2    0.0%    0.1%  T _napi_create_int32
+      2    0.0%    0.1%  T _mach_vm_allocate
+      2    0.0%    0.1%  T _fcntl$NOCANCEL
+      2    0.0%    0.1%  T ___pthread_init
+      1    0.0%    0.0%  t node::fs::Open(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t node::fs::InternalModuleStat(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t node::Environment::RunAndClearNativeImmediates(bool)::$_7::operator()(node::CallbackQueue<void, node::Environment*>*) const
+      1    0.0%    0.0%  T _semaphore_create
+      1    0.0%    0.0%  T _os_unfair_lock_unlock
+      1    0.0%    0.0%  T _napi_get_reference_value
+      1    0.0%    0.0%  T _mig_dealloc_reply_port
+
+ [Summary]:
+   ticks  total  nonlib   name
+    431   10.7%   10.9%  JavaScript
+   3448   85.5%   87.2%  C++
+     85    2.1%    2.1%  GC
+     79    2.0%          Shared libraries
+     77    1.9%          Unaccounted
+
+ [C++ entry points]:
+   ticks    cpp   total   name
+   1802   58.0%   44.7%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+   1019   32.8%   25.3%  T __kernelrpc_mach_port_get_refs
+     41    1.3%    1.0%  t ___pfz_setup
+     31    1.0%    0.8%  t void node::Buffer::(anonymous namespace)::StringSlice<(node::encoding)0>(v8::FunctionCallbackInfo<v8::Value> const&)
+     28    0.9%    0.7%  T __pthread_exit_if_canceled
+     22    0.7%    0.5%  t void node::Buffer::(anonymous namespace)::StringWrite<(node::encoding)0>(v8::FunctionCallbackInfo<v8::Value> const&)
+     19    0.6%    0.5%  T _napi_get_element
+     17    0.5%    0.4%  t v8impl::(anonymous namespace)::FunctionCallbackWrapper::Invoke(v8::FunctionCallbackInfo<v8::Value> const&)
+     15    0.5%    0.4%  T node_napi_env__::can_call_into_js() const
+     15    0.5%    0.4%  T _napi_get_array_length
+     13    0.4%    0.3%  T _napi_get_cb_info
+     12    0.4%    0.3%  T _napi_get_buffer_info
+     11    0.4%    0.3%  T node::Buffer::Data(v8::Local<v8::Value>)
+     10    0.3%    0.2%  t __pthread_main_thread_init
+      7    0.2%    0.2%  T _napi_get_value_uint32
+      6    0.2%    0.1%  T _voucher_mach_msg_adopt
+      5    0.2%    0.1%  t v8impl::(anonymous namespace)::FunctionCallbackWrapper::Args(napi_value__**, unsigned long)
+      5    0.2%    0.1%  t node::ArrayBufferViewContents<unsigned char, 64ul>::Read(v8::Local<v8::ArrayBufferView>)
+      5    0.2%    0.1%  t __pthread_strtoul
+      4    0.1%    0.1%  T node::Buffer::Length(v8::Local<v8::Value>)
+      3    0.1%    0.1%  t __os_nospin_lock_lock_slow
+      2    0.1%    0.0%  t std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> > std::__1::__pad_and_output<char, std::__1::char_traits<char> >(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> >, char const*, char const*, char const*, std::__1::ios_base&, char)
+      2    0.1%    0.0%  t __pthread_mutex_global_init
+      2    0.1%    0.0%  t __pthread_bsdthread_init
+      2    0.1%    0.0%  T node::contextify::ContextifyContext::CompileFunction(v8::FunctionCallbackInfo<v8::Value> const&)
+      2    0.1%    0.0%  T _kdebug_trace
+      2    0.1%    0.0%  T ___pthread_init
+      1    0.0%    0.0%  t node::fs::Open(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t node::fs::InternalModuleStat(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  T _mig_dealloc_reply_port
+
+ [Bottom up (heavy) profile]:
+  Note: percentage shows a share of a particular caller in the total
+  amount of its parent calls.
+  Callers occupying less than 1.0% are not shown.
+
+   ticks parent  name
+   1959   48.6%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+    532   27.2%    LazyCompile: *_writev /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:173:11
+    532  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+    532  100.0%        LazyCompile: *emit node:events:340:44
+    532  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+    420   78.9%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     59   11.1%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     28    5.3%            LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     25    4.7%            LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+    373   19.0%    t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+    321   86.1%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+    321  100.0%        LazyCompile: *emit node:events:340:44
+    321  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+    256   79.8%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     39   12.1%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     16    5.0%            LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     10    3.1%            LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+     24    6.4%      LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     10    2.7%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      6   60.0%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3   30.0%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      3  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1   10.0%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      9    2.4%      LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+      8   88.9%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   11.1%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      1  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      1  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+    252   12.9%    LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+    251   99.6%      LazyCompile: *emit node:events:340:44
+    251  100.0%        LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+    191   76.1%          LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     36   14.3%          LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     36  100.0%            Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+     15    6.0%          LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     15  100.0%            Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      9    3.6%          LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      9  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+    204   10.4%    LazyCompile: *slice node:buffer:629:12
+    127   62.3%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     95   74.8%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     21   16.5%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     21  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+     21  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      8    6.3%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      8  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3    2.4%        LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      3  100.0%            Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     77   37.7%      LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+     59   76.6%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      9   11.7%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      9  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      9  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      5    6.5%        LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      5  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      3   60.0%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2   40.0%            Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      4    5.2%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      4  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     91    4.6%    LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     72   79.1%      LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     11   12.1%      LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     11  100.0%        Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+     11  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     11  100.0%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      7    7.7%      LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      7  100.0%        Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1    1.1%      LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      1  100.0%        Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%          LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     78    4.0%    LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+     65   83.3%      LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      7    9.0%      LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      7  100.0%        Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      7  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      7  100.0%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      5    6.4%      LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      5  100.0%        Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      5  100.0%          LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1    1.3%      LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%        Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     75    3.8%    LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     66    3.4%    LazyCompile: *_flushHeaders /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:55:17
+     66  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+     66  100.0%        LazyCompile: *emit node:events:340:44
+     66  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     49   74.2%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+     10   15.2%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      7   10.6%            LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+
+   1020   25.3%  T __kernelrpc_mach_port_get_refs
+   1010   99.0%    LazyCompile: *_writev /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:173:11
+   1010  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+   1010  100.0%        LazyCompile: *emit node:events:340:44
+   1010  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+    779   77.1%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+    123   12.2%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+     61    6.0%            LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     47    4.7%            LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+
+    110    2.7%  LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+     91   82.7%    LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      8    7.3%    LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      8  100.0%      Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      8  100.0%        Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      8  100.0%          LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      5    4.5%    LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      5  100.0%      Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      3   60.0%        LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2   40.0%        Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      5    4.5%    LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      5  100.0%      Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+
+    102    2.5%  LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     86   84.3%    LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      9    8.8%    LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      9  100.0%      Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      9  100.0%        Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      9  100.0%          LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3    2.9%    LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3  100.0%      Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      2   66.7%        Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   33.3%        LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    2.0%    LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      2  100.0%      Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+
+     77    1.9%  UNKNOWN
+     45   58.4%    LazyCompile: *_writev /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:173:11
+     45  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+     45  100.0%        LazyCompile: *emit node:events:340:44
+     45  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     35   77.8%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      4    8.9%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      3    6.7%            LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3    6.7%            LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+     13   16.9%    t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+      7   53.8%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      7  100.0%        LazyCompile: *emit node:events:340:44
+      7  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      6   85.7%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   14.3%            LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      5   38.5%      LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1    7.7%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1  100.0%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3    3.9%    LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      3  100.0%      LazyCompile: *emit node:events:340:44
+      3  100.0%        LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      2   66.7%          LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   33.3%          LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%            Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    2.6%    LazyCompile: *slice node:buffer:629:12
+      1   50.0%      LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+      1  100.0%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   50.0%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1  100.0%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    2.6%    LazyCompile: *_flushHeaders /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:55:17
+      2  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      2  100.0%        LazyCompile: *emit node:events:340:44
+      2  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      2  100.0%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1    1.3%    LazyCompile: ~toRealPath node:internal/modules/cjs/loader:393:20
+      1  100.0%      LazyCompile: ~Module._findPath node:internal/modules/cjs/loader:494:28
+      1  100.0%        LazyCompile: ~resolveMainPath node:internal/modules/run_main:11:25
+      1  100.0%          LazyCompile: ~executeUserEntryPoint node:internal/modules/run_main:74:31
+      1  100.0%            Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      1    1.3%    LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:22:36
+      1  100.0%      Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      1    1.3%    LazyCompile: *_writeHeader /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:62:16
+      1  100.0%      Function: ^_end /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:204:8
+      1  100.0%        Function: ^end /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:172:7
+      1  100.0%          Function: ^router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      1  100.0%            LazyCompile: *emit node:events:340:44
+      1    1.3%    LazyCompile: *_end /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:204:8
+      1  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      1  100.0%        LazyCompile: *emit node:events:340:44
+      1  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1  100.0%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+
+     54    1.3%  T __kernelrpc_mach_vm_protect_trap
+
+     44    1.1%  LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+     42   95.5%    LazyCompile: *emit node:events:340:44
+     42  100.0%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+     27   64.3%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      9   21.4%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      9  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      9  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      4    9.5%        LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      4  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      4  100.0%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    4.8%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      2  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    4.5%    LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1   50.0%      LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      1  100.0%        Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%          LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   50.0%      LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+
+     43    1.1%  t ___pfz_setup
+     27   62.8%    LazyCompile: *slice node:buffer:629:12
+     22   81.5%      LazyCompile: *HTTPParser.REQUEST_LINE /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:216:46
+     15   68.2%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3   13.6%        LazyCompile: *onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3  100.0%          Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      2   66.7%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   33.3%            Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      3   13.6%        LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      3  100.0%          Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3  100.0%            Function: ^done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1    4.5%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      5   18.5%      LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      4   80.0%        LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   20.0%        LazyCompile: *done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%          Function: ^_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      8   18.6%    LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      8  100.0%      LazyCompile: *emit node:events:340:44
+      8  100.0%        LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      7   87.5%          LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      1   12.5%          LazyCompile: *HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      1  100.0%            Function: ^onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      3    7.0%    LazyCompile: *_writev /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:173:11
+      3  100.0%      LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      3  100.0%        LazyCompile: *emit node:events:340:44
+      3  100.0%          LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      3  100.0%            LazyCompile: *_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+      2    4.7%    t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+      2  100.0%      LazyCompile: *_flushHeaders /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/response.js:55:17
+      2  100.0%        LazyCompile: *router /Users/coby/go/src/github.com/probably-not/mabe-challenge/index.js:54:16
+      2  100.0%          LazyCompile: *emit node:events:340:44
+      2  100.0%            LazyCompile: *HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1    2.3%    LazyCompile: ~patchProcessObject node:internal/bootstrap/pre_execution:81:28
+      1  100.0%      LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:22:36
+      1  100.0%        Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      1    2.3%    LazyCompile: ~getCheckedFunction node:os:63:28
+      1  100.0%      Function: ~<anonymous> node:os:1:1
+      1  100.0%        Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%          LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      1  100.0%            LazyCompile: ~loadNativeModule node:internal/modules/cjs/helpers:44:26
+      1    2.3%    LazyCompile: ~HTTPParser.HEADER /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:271:40
+      1  100.0%      LazyCompile: ~HTTPParser.execute /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/http-parser-js/http-parser.js:96:41
+      1  100.0%        LazyCompile: ~onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-http/lib/server.js:52:21
+      1  100.0%          LazyCompile: ~done /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/queue.js:69:8
+      1  100.0%            LazyCompile: ~_onread /Users/coby/go/src/github.com/probably-not/mabe-challenge/node_modules/turbo-net/lib/connection.js:121:11
+

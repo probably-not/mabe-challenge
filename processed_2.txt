@@ -1,0 +1,203 @@
+Statistical profiling result from isolate-0x130008000-87858-v8.log, (4034 ticks, 9 unaccounted, 0 excluded).
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+     58    1.4%          /usr/lib/system/libsystem_malloc.dylib
+      8    0.2%          /usr/lib/system/libsystem_c.dylib
+      6    0.1%          /usr/lib/libc++.1.dylib
+      3    0.1%          /usr/lib/system/libdyld.dylib
+      1    0.0%          /usr/lib/system/libsystem_pthread.dylib
+      1    0.0%          /usr/lib/system/libsystem_kernel.dylib
+      1    0.0%          /usr/lib/libc++abi.dylib
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+      9    0.2%    0.2%  LazyCompile: *afterWrite node:internal/streams/writable:487:20
+      7    0.2%    0.2%  LazyCompile: *onwrite node:internal/streams/writable:425:17
+      6    0.1%    0.2%  LazyCompile: *writeGeneric node:internal/stream_base_commons:151:22
+      5    0.1%    0.1%  LazyCompile: *readableAddChunk node:internal/streams/readable:236:26
+      5    0.1%    0.1%  LazyCompile: *ondata node:internal/streams/readable:752:18
+      4    0.1%    0.1%  LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      4    0.1%    0.1%  LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+      4    0.1%    0.1%  LazyCompile: *Readable.read node:internal/streams/readable:394:35
+      3    0.1%    0.1%  LazyCompile: *nextTick node:internal/process/task_queues:104:18
+      1    0.0%    0.0%  LazyCompile: *normalizeString node:path:66:25
+      1    0.0%    0.0%  LazyCompile: *Socket.read node:net:639:33
+      1    0.0%    0.0%  Function: ^writeOrBuffer node:internal/streams/writable:365:23
+      1    0.0%    0.0%  Function: ^hasHooks node:internal/async_hooks:460:18
+      1    0.0%    0.0%  Function: ^fromStringFast node:buffer:412:24
+
+ [C++]:
+   ticks  total  nonlib   name
+   2726   67.6%   68.9%  T _posix_spawnattr_init
+    482   11.9%   12.2%  T __kernelrpc_mach_vm_protect_trap
+    312    7.7%    7.9%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+    266    6.6%    6.7%  T _mig_dealloc_reply_port
+     27    0.7%    0.7%  T _host_request_notification
+     12    0.3%    0.3%  T _voucher_mach_msg_adopt
+      7    0.2%    0.2%  t __os_nospin_lock_unlock_slow
+      5    0.1%    0.1%  T _kdebug_trace
+      4    0.1%    0.1%  t std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long)
+      4    0.1%    0.1%  T _task_restartable_ranges_synchronize
+      3    0.1%    0.1%  t __pthread_bsdthread_init
+      3    0.1%    0.1%  T node::errors::TryCatchScope::~TryCatchScope()
+      3    0.1%    0.1%  T node::contextify::ContextifyContext::CompileFunction(v8::FunctionCallbackInfo<v8::Value> const&)
+      2    0.0%    0.1%  t std::__1::vector<v8::Global<v8::Context>, std::__1::allocator<v8::Global<v8::Context> > >::__append(unsigned long)
+      2    0.0%    0.1%  t node::Environment::RunAndClearNativeImmediates(bool)::$_7::operator()(node::CallbackQueue<void, node::Environment*>*) const
+      2    0.0%    0.1%  t node::AsyncHooks::pop_async_context(double)
+      2    0.0%    0.1%  t __pthread_strtoul
+      2    0.0%    0.1%  T node::NodeArrayBufferAllocator::Reallocate(void*, unsigned long, unsigned long)
+      2    0.0%    0.1%  T node::InternalMakeCallback(node::Environment*, v8::Local<v8::Object>, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*, node::async_context)
+      2    0.0%    0.1%  T node::InternalCallbackScope::Close()
+      2    0.0%    0.1%  T node::Buffer::Data(v8::Local<v8::Value>)
+      2    0.0%    0.1%  T node::AsyncWrap::MakeCallback(v8::Local<v8::Function>, int, v8::Local<v8::Value>*)
+      2    0.0%    0.1%  T _os_packet_set_trace_id
+      2    0.0%    0.1%  T _mach_vm_allocate
+      2    0.0%    0.1%  T ___pthread_init
+      1    0.0%    0.0%  t void std::__1::__tree_balance_after_insert<std::__1::__tree_node_base<void*>*>(std::__1::__tree_node_base<void*>*, std::__1::__tree_node_base<void*>*)
+      1    0.0%    0.0%  t std::__1::__hash_table<unsigned long, std::__1::hash<unsigned long>, std::__1::equal_to<unsigned long>, std::__1::allocator<unsigned long> >::remove(std::__1::__hash_const_iterator<std::__1::__hash_node<unsigned long, void*>*>)
+      1    0.0%    0.0%  t std::__1::__hash_iterator<std::__1::__hash_node<void*, void*>*> std::__1::__hash_table<void*, std::__1::hash<void*>, std::__1::equal_to<void*>, std::__1::allocator<void*> >::find<void*>(void* const&)
+      1    0.0%    0.0%  t node::TraceEventScope::~TraceEventScope()
+      1    0.0%    0.0%  t node::AsyncHooks::push_async_context(double, double, v8::Local<v8::Object>)
+      1    0.0%    0.0%  t __pthread_main_thread_init
+      1    0.0%    0.0%  t __os_nospin_lock_lock_slow
+      1    0.0%    0.0%  T node::NodeArrayBufferAllocator::Allocate(unsigned long)
+      1    0.0%    0.0%  T node::Environment::RunWeakRefCleanup()
+      1    0.0%    0.0%  T node::Environment::CheckImmediate(uv_check_s*)
+      1    0.0%    0.0%  T node::Buffer::Length(v8::Local<v8::Value>)
+      1    0.0%    0.0%  T node::AsyncWrap::EmitTraceEventBefore()
+      1    0.0%    0.0%  T _pthread_atfork
+      1    0.0%    0.0%  T _os_packet_get_trace_id
+      1    0.0%    0.0%  T _mach_port_construct
+      1    0.0%    0.0%  T __pthread_exit_if_canceled
+      1    0.0%    0.0%  T __os_semaphore_dispose
+
+ [Summary]:
+   ticks  total  nonlib   name
+     52    1.3%    1.3%  JavaScript
+   3895   96.6%   98.5%  C++
+     28    0.7%    0.7%  GC
+     78    1.9%          Shared libraries
+      9    0.2%          Unaccounted
+
+ [C++ entry points]:
+   ticks    cpp   total   name
+    266   60.0%    6.6%  T _mig_dealloc_reply_port
+    131   29.6%    3.2%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+     18    4.1%    0.4%  T _host_request_notification
+      6    1.4%    0.1%  T _voucher_mach_msg_adopt
+      5    1.1%    0.1%  T _kdebug_trace
+      4    0.9%    0.1%  t std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long)
+      3    0.7%    0.1%  T node::contextify::ContextifyContext::CompileFunction(v8::FunctionCallbackInfo<v8::Value> const&)
+      2    0.5%    0.0%  t __pthread_strtoul
+      2    0.5%    0.0%  T node::Buffer::Data(v8::Local<v8::Value>)
+      2    0.5%    0.0%  T ___pthread_init
+      1    0.2%    0.0%  t void std::__1::__tree_balance_after_insert<std::__1::__tree_node_base<void*>*>(std::__1::__tree_node_base<void*>*, std::__1::__tree_node_base<void*>*)
+      1    0.2%    0.0%  t __pthread_main_thread_init
+      1    0.2%    0.0%  t __pthread_bsdthread_init
+      1    0.2%    0.0%  T node::Buffer::Length(v8::Local<v8::Value>)
+
+ [Bottom up (heavy) profile]:
+  Note: percentage shows a share of a particular caller in the total
+  amount of its parent calls.
+  Callers occupying less than 1.0% are not shown.
+
+   ticks parent  name
+   2726   67.6%  T _posix_spawnattr_init
+
+    482   11.9%  T __kernelrpc_mach_vm_protect_trap
+
+    312    7.7%  t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+     41   13.1%    LazyCompile: *writeGeneric node:internal/stream_base_commons:151:22
+     40   97.6%      LazyCompile: *ondata node:internal/streams/readable:752:18
+     40  100.0%        LazyCompile: *readableAddChunk node:internal/streams/readable:236:26
+     40  100.0%          LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+      1    2.4%      Function: ^Socket._writeGeneric node:net:769:42
+      1  100.0%        Function: ^Socket._write node:net:806:35
+      1  100.0%          Function: ^writeOrBuffer node:internal/streams/writable:365:23
+      1  100.0%            Function: ^_write node:internal/streams/writable:283:16
+     19    6.1%    LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+     12    3.8%    Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      7   58.3%      Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      2   28.6%        Function: ~<anonymous> node:internal/child_process:1:1
+      2  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   14.3%        LazyCompile: ~listenInCluster node:net:1372:25
+      1  100.0%          LazyCompile: ~doListen node:net:1515:40
+      1  100.0%            LazyCompile: ~processTicksAndRejections node:internal/process/task_queues:68:35
+      1   14.3%        LazyCompile: ~lazyLoadStreams node:fs:2841:25
+      1  100.0%          LazyCompile: ~get ReadStream node:fs:2984:17
+      1  100.0%            t node::fs::FileHandle::DoShutdown(node::ShutdownWrap*)::$_2::__invoke(uv_fs_s*)
+      1   14.3%        Function: ~<anonymous> node:internal/cluster/primary:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   14.3%        Function: ~<anonymous> node:dns:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      1   14.3%        Function: ~<anonymous> node:child_process:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      5   41.7%      LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      3   60.0%        LazyCompile: ~loadNativeModule node:internal/modules/cjs/helpers:44:26
+      3  100.0%          LazyCompile: ~Module._load node:internal/modules/cjs/loader:757:24
+      3  100.0%            LazyCompile: ~Module.require node:internal/modules/cjs/loader:997:36
+      2   40.0%        Function: ^loadNativeModule node:internal/modules/cjs/helpers:44:26
+      2  100.0%          LazyCompile: ~Module._load node:internal/modules/cjs/loader:757:24
+      2  100.0%            Function: ^Module.require node:internal/modules/cjs/loader:997:36
+     11    3.5%    LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      9    2.9%    LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      9  100.0%      LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        LazyCompile: ~initializeCJSLoader node:internal/bootstrap/pre_execution:421:29
+      1  100.0%          LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:22:36
+      1  100.0%            Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      1   11.1%        Function: ~<anonymous> node:internal/source_map/source_map_cache:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/esm/resolve:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/esm/module_map:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/esm/loader:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/esm/load:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/esm/get_source:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/modules/cjs/loader:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1   11.1%        Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      6    1.9%    LazyCompile: *ondata node:internal/streams/readable:752:18
+      6  100.0%      LazyCompile: *readableAddChunk node:internal/streams/readable:236:26
+      6  100.0%        LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+
+    266    6.6%  T _mig_dealloc_reply_port
+    266  100.0%    LazyCompile: *writeGeneric node:internal/stream_base_commons:151:22
+    266  100.0%      LazyCompile: *ondata node:internal/streams/readable:752:18
+    266  100.0%        LazyCompile: *readableAddChunk node:internal/streams/readable:236:26
+    266  100.0%          LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+
+     58    1.4%  /usr/lib/system/libsystem_malloc.dylib
+      4    6.9%    LazyCompile: *writeGeneric node:internal/stream_base_commons:151:22
+      4  100.0%      LazyCompile: *ondata node:internal/streams/readable:752:18
+      4  100.0%        LazyCompile: *readableAddChunk node:internal/streams/readable:236:26
+      4  100.0%          LazyCompile: *onStreamRead node:internal/stream_base_commons:171:22
+      1    1.7%    LazyCompile: ~defaultTriggerAsyncIdScope node:internal/async_hooks:445:36
+      1  100.0%      LazyCompile: ~<anonymous> node:net:1020:73
+      1  100.0%        LazyCompile: ~processTicksAndRejections node:internal/process/task_queues:68:35
+      1    1.7%    Function: ~<anonymous> node:internal/modules/cjs/loader:1:1
+      1  100.0%      LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%        LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1  100.0%          LazyCompile: ~initializeCJSLoader node:internal/bootstrap/pre_execution:421:29
+      1  100.0%            LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:22:36
+      1    1.7%    Function: ^onwrite node:internal/streams/writable:425:17
+      1  100.0%      Function: ^afterWriteDispatched node:internal/stream_base_commons:159:30
+      1  100.0%        Function: ^writeGeneric node:internal/stream_base_commons:151:22
+      1  100.0%          Function: ^Socket._writeGeneric node:net:769:42
+      1  100.0%            Function: ^Socket._write node:net:806:35
+
