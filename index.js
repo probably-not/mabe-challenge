@@ -71,6 +71,63 @@ const http = require("turbo-http");
 let server = http.createServer();
 
 server.on("request", router);
-server.listen(port, "0.0.0.0", () => {
-  console.log(`Server listening at http://0.0.0.0:${port}`);
-});
+
+const startServer = (() => {
+  let executed = false;
+  return () => {
+    if (executed) {
+      return;
+    }
+
+    server.listen(port, "0.0.0.0", () => {
+      console.log(`Server listening at http://0.0.0.0:${port}`);
+    });
+
+    executed = true;
+  };
+})();
+
+if (!isMaster) {
+  try {
+    const { exec } = require("child_process");
+    exec(
+      `iptables -t nat -I PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+      (err, stdout, stderr) => {
+        if (err) {
+          console.log("error applying first IPTables Rule", err);
+          return;
+        }
+        if (stderr) {
+          console.log("first IPTables Rule STDERR", stderr);
+          return;
+        }
+        if (stdout) {
+          console.log("first IPTables Rule STDOUT", stdout);
+        }
+        exec(
+          `iptables -t nat -I OUTPUT -p tcp -o lo --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+          (err, stdout, stderr) => {
+            if (err) {
+              console.log("error applying second IPTables Rule", err);
+              return;
+            }
+            if (stderr) {
+              console.log("second IPTables Rule STDERR", stderr);
+              return;
+            }
+            if (stdout) {
+              console.log("second IPTables Rule STDOUT", stdout);
+            }
+            startServer();
+          }
+        );
+      }
+    );
+  } catch (err) {
+    console.log("failed to use iptables to create port forwarding", err);
+  } finally {
+    startServer();
+  }
+}
+
+startServer();
