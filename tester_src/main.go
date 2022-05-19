@@ -111,7 +111,7 @@ func waitForNodeProccess() {
 
 func startNodeProccess() []*exec.Cmd {
 	fmt.Println("starting node processes")
-	cmd := exec.Command(`node`, `index.js`, `4001`)
+	cmd := exec.Command(`node`, `--prof`, `index.js`, `4001`)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	go func() {
@@ -120,7 +120,7 @@ func startNodeProccess() []*exec.Cmd {
 			panic(err)
 		}
 	}()
-	cmd2 := exec.Command(`node`, `index.js`, `4002`)
+	cmd2 := exec.Command(`node`, `--prof`, `index.js`, `4002`)
 	cmd2.Stdout = os.Stdout
 	cmd2.Stderr = os.Stdout
 	go func() {
