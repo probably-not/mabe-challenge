@@ -1,7 +1,7 @@
 const turbo = require("turbo-net");
 const { HTTPParser } = require("http-parser-js");
 const Request = require("./request");
-const Response = require("./response");
+const Response = require("turbo-http/lib/response");
 
 class Server extends turbo.Server {
   constructor() {
