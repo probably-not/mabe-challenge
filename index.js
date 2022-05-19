@@ -80,7 +80,7 @@ const router = async (req, res) => {
 /* Define the servers and start listening to requests */
 
 const net = require("net");
-const forwarder = net.createServer(function (from) {
+const forwarder = net.createServer((from) => {
   const to = net.createConnection({
     host: "0.0.0.0",
     port: masterPort,
