@@ -72,10 +72,17 @@ let server = http.createServer();
 
 server.on("request", router);
 
+let portforwardingWithIPTables = false;
 const startServer = (() => {
   let executed = false;
   return () => {
     if (executed) {
+      return;
+    }
+
+    if (!isMaster && portforwardingWithIPTables) {
+      executed = true;
+      console.log("iptables forwarding enabled, no need to start server");
       return;
     }
 
@@ -90,39 +97,53 @@ const startServer = (() => {
 if (!isMaster) {
   try {
     const { exec } = require("child_process");
-    exec(
-      `sudo iptables -t nat -I PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
-      (err, stdout, stderr) => {
-        if (err) {
-          console.log("error applying first IPTables Rule", err);
-          return;
-        }
-        if (stderr) {
-          console.log("first IPTables Rule STDERR", stderr);
-          return;
-        }
-        if (stdout) {
-          console.log("first IPTables Rule STDOUT", stdout);
-        }
-        exec(
-          `sudo iptables -t nat -I OUTPUT -p tcp -o lo --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
-          (err, stdout, stderr) => {
-            if (err) {
-              console.log("error applying second IPTables Rule", err);
-              return;
-            }
-            if (stderr) {
-              console.log("second IPTables Rule STDERR", stderr);
-              return;
-            }
-            if (stdout) {
-              console.log("second IPTables Rule STDOUT", stdout);
-            }
-            startServer();
-          }
-        );
+    exec(`iptables`, (err, stdout, stderr) => {
+      if (err) {
+        console.log("error checking for iptables", err);
+        return;
       }
-    );
+      if (stderr) {
+        console.log("checking for iptables STDERR", stderr);
+        return;
+      }
+      if (stdout) {
+        console.log("checking for iptables STDOUT", stdout);
+      }
+      exec(
+        `sudo iptables -t nat -I PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+        (err, stdout, stderr) => {
+          if (err) {
+            console.log("error applying first IPTables Rule", err);
+            return;
+          }
+          if (stderr) {
+            console.log("first IPTables Rule STDERR", stderr);
+            return;
+          }
+          if (stdout) {
+            console.log("first IPTables Rule STDOUT", stdout);
+          }
+          exec(
+            `sudo iptables -t nat -I OUTPUT -p tcp -o lo --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+            (err, stdout, stderr) => {
+              if (err) {
+                console.log("error applying second IPTables Rule", err);
+                return;
+              }
+              if (stderr) {
+                console.log("second IPTables Rule STDERR", stderr);
+                return;
+              }
+              if (stdout) {
+                console.log("second IPTables Rule STDOUT", stdout);
+              }
+              portforwardingWithIPTables = true;
+              startServer();
+            }
+          );
+        }
+      );
+    });
   } catch (err) {
     console.log("failed to use iptables to create port forwarding", err);
   } finally {
