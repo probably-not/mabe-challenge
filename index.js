@@ -91,7 +91,7 @@ if (!isMaster) {
   try {
     const { exec } = require("child_process");
     exec(
-      `iptables -t nat -I PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+      `sudo iptables -t nat -I PREROUTING -p tcp --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
       (err, stdout, stderr) => {
         if (err) {
           console.log("error applying first IPTables Rule", err);
@@ -105,7 +105,7 @@ if (!isMaster) {
           console.log("first IPTables Rule STDOUT", stdout);
         }
         exec(
-          `iptables -t nat -I OUTPUT -p tcp -o lo --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
+          `sudo iptables -t nat -I OUTPUT -p tcp -o lo --dport ${port} -j REDIRECT --to-ports ${masterPort}`,
           (err, stdout, stderr) => {
             if (err) {
               console.log("error applying second IPTables Rule", err);
