@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "http-parser-js": "^0.5.6",
+    "llhttp": "^1.0.1",
     "turbo-http": "^0.3.2",
     "turbo-net": "^1.4.0"
   }
