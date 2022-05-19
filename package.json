@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "challenge"
+    "url": "https://github.com/probably-not/mabe-challenge"
   },
-  "author": "Moonactive",
+  "author": "Coby Benveniste",
   "license": "ISC",
   "dependencies": {
     "turbo-http": "^0.3.2"
