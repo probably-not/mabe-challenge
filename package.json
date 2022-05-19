@@ -13,6 +13,8 @@
   "author": "Coby Benveniste",
   "license": "ISC",
   "dependencies": {
-    "turbo-http": "^0.3.2"
+    "http-parser-js": "^0.5.6",
+    "turbo-http": "^0.3.2",
+    "turbo-net": "^1.4.0"
   }
 }
