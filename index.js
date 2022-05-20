@@ -81,10 +81,7 @@ const router = async (req, res) => {
 
 const net = require("net");
 const forwarder = net.createServer((from) => {
-  const to = net.createConnection({
-    host: "0.0.0.0",
-    port: masterPort,
-  });
+  const to = net.createConnection("./pipe");
   from.pipe(to);
   to.pipe(from);
 });
@@ -100,3 +97,11 @@ server.on("request", router);
 server.listen(port, "0.0.0.0", () => {
   console.log(`Server listening at http://0.0.0.0:${port}`);
 });
+
+if (isMaster) {
+  const socketServer = http.createServer();
+  socketServer.on("request", router);
+  socketServer.listen("./pipe", () => {
+    console.log(`Server listening at pipe`);
+  });
+}
