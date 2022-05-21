@@ -5,7 +5,6 @@ const cards = JSON.parse(cardsData);
 const allCards = cards.map((c) => {
   return Buffer.from(JSON.stringify(c));
 });
-const allCardsLength = allCards.length;
 const userSawAllCards = Buffer.from(JSON.stringify({ id: "ALL CARDS" }));
 
 const port = +process.argv[2] || 3000;
@@ -22,10 +21,12 @@ try {
   }
 }
 
-let masterPort;
+// Define start and end for each side, to stop the tester without sending duplicates
+let myStart = 0;
+let myHalf = 50;
 if (!isMaster) {
-  masterPortStr = fs.readFileSync(lockFile, "utf8");
-  masterPort = parseInt(masterPortStr, 10);
+  myStart = 50;
+  myHalf = 100;
   fs.unlinkSync(lockFile);
 }
 
@@ -46,55 +47,28 @@ const shutdownHandler = (signal) => {
 
 process.on("SIGINT", shutdownHandler);
 process.on("SIGTERM", shutdownHandler);
+process.on("exit", shutdownHandler);
 
 const userIndexes = {};
-const rpath = "/card_add?";
-const pathMatch = new RegExp(rpath);
 
 const router = async (req, res) => {
   res.statusCode = 200;
 
-  if (
-    req.url.startsWith(rpath) ||
-    req.url.includes(rpath) ||
-    pathMatch.test(req.url)
-  ) {
-    const userId = req.url.split("id=")[1];
+  if (!userIndexes[req.url]) {
+    userIndexes[req.url] = myStart;
+  }
+  const idx = (userIndexes[req.url] += 1);
 
-    if (!userIndexes[userId]) {
-      userIndexes[userId] = 0;
-    }
-    const idx = (userIndexes[userId] += 1);
-
-    if (idx <= allCardsLength) {
-      res.end(allCards[idx - 1]);
-      return;
-    }
-    res.end(userSawAllCards);
+  if (idx <= myHalf) {
+    res.end(allCards[idx - 1]);
     return;
   }
-
-  res.end(JSON.stringify({ ready: true }));
+  res.end(userSawAllCards);
+  return;
 };
-
-/* Define the servers and start listening to requests */
-
-const net = require("net");
-const forwarder = net.createServer((from) => {
-  const to = net.createConnection({
-    host: "0.0.0.0",
-    port: masterPort,
-  });
-  from.pipe(to);
-  to.pipe(from);
-});
 
 const http = require("turbo-http");
 let server = http.createServer();
-
-if (!isMaster) {
-  server = forwarder;
-}
 
 server.on("request", router);
 server.listen(port, "0.0.0.0", () => {
