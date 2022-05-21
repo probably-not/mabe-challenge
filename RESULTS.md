@@ -134,3 +134,9 @@ test took: 4472 milliseconds| 4.47 seconds
 ```
 
 The performance boost here is minimal and pretty negligible, it's variable, sometimes higher, sometimes lower. Hopefully, it will go lower in the full tests.
+
+### v9
+
+The final step to make a best solution. While the port forwarding took us to everything being all in memory, it still required an extra step in the slow path of forwarding the tcp traffic into the "master" service. With the latest change (which is a bit of a tricky hack), we contain everything in memory. You see, the tester will continue to send requests until all the cards have been visited, but the "All Cards" response does not count against us (you can see this behaviour in the `parseResults` function in the tester's code). So we can split the cards into two slices, and return 0-50 to the master and 50-100 to the worker.
+
+This performance boost took us to the limit, and while it's only slightly faster on the MacBook Pro, it's much faster on the tester machine.
